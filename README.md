@@ -5,6 +5,30 @@ Run `chap eval` against every repo in
 status report. Used to keep an eye on which models still work end-to-end
 against the current `chap-core`.
 
+## Current status
+
+As of the last full sweep (2026-05-04T22:20Z): **21 pass / 7 fail** of 28
+chap-models repos.
+
+| Repo | Failure |
+| --- | --- |
+| [`Exponential_smoothing_state_space_model`](https://github.com/chap-models/Exponential_smoothing_state_space_model) | `docker_image_missing_runtime` |
+| [`Vietnam-dengue-superensemble`](https://github.com/chap-models/Vietnam-dengue-superensemble) | `nonzero_exit` |
+| [`Xiang_LSTM`](https://github.com/chap-models/Xiang_LSTM) | `model_runtime_error` |
+| [`epidemiar_example_model`](https://github.com/chap-models/epidemiar_example_model) | `nonzero_exit` |
+| [`ewars_per_district`](https://github.com/chap-models/ewars_per_district) | `docker_pull_failed` |
+| [`minimal_template_example`](https://github.com/chap-models/minimal_template_example) | `model_runtime_error` |
+| [`rwanda_random_forest`](https://github.com/chap-models/rwanda_random_forest) | `model_runtime_error` |
+
+See [`findings.md`](findings.md) for the full table (per-repo style,
+period, covariates, cause, suggested fix, duration) and
+[`TRIAGE.md`](TRIAGE.md) for hand-written investigation notes per failing
+repo.
+
+This section is hand-updated and can drift. Refresh after a sweep with
+`make run` (or `make reclassify` to re-render from existing logs without
+rerunning chap eval).
+
 ## What it does
 
 For each public repo under the `chap-models` org:

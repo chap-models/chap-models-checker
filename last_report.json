@@ -18,7 +18,7 @@
       },
       "status": "pass",
       "failure": null,
-      "duration_s": 11.92103099822998,
+      "duration_s": 11.989840269088745,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/auto_arima/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/auto_arima/eval.nc",
@@ -28,7 +28,7 @@
       "platform_override": "linux/amd64",
       "returncode": 0,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:28:07+00:00"
+      "checked_at": "2026-05-04T21:58:28+00:00"
     },
     {
       "repo": "auto_arima_chapkit",
@@ -47,7 +47,7 @@
       },
       "status": "pass",
       "failure": null,
-      "duration_s": 38.57923412322998,
+      "duration_s": 11.131286859512329,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/auto_arima_chapkit/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/auto_arima_chapkit/eval.nc",
@@ -57,7 +57,7 @@
       "platform_override": null,
       "returncode": 0,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:29:02+00:00"
+      "checked_at": "2026-05-04T21:58:43+00:00"
     },
     {
       "repo": "auto_ets",
@@ -78,7 +78,7 @@
       },
       "status": "pass",
       "failure": null,
-      "duration_s": 20.112955331802368,
+      "duration_s": 21.55519986152649,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/auto_ets/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/auto_ets/eval.nc",
@@ -88,7 +88,7 @@
       "platform_override": "linux/amd64",
       "returncode": 0,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:29:24+00:00"
+      "checked_at": "2026-05-04T21:59:07+00:00"
     },
     {
       "repo": "baseline_model_for_sim_study",
@@ -118,7 +118,7 @@
       },
       "status": "pass",
       "failure": null,
-      "duration_s": 33.89315485954285,
+      "duration_s": 81.76828789710999,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/baseline_model_for_sim_study/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/baseline_model_for_sim_study/eval.nc",
@@ -128,7 +128,7 @@
       "platform_override": "linux/amd64",
       "returncode": 0,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:29:59+00:00"
+      "checked_at": "2026-05-04T22:00:30+00:00"
     },
     {
       "repo": "chap_auto_ewars",
@@ -159,7 +159,7 @@
       },
       "status": "pass",
       "failure": null,
-      "duration_s": 130.3367350101471,
+      "duration_s": 145.20339107513428,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/chap_auto_ewars/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/chap_auto_ewars/eval.nc",
@@ -169,7 +169,7 @@
       "platform_override": "linux/amd64",
       "returncode": 0,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:32:10+00:00"
+      "checked_at": "2026-05-04T22:02:57+00:00"
     },
     {
       "repo": "chap_auto_ewars_weekly",
@@ -200,7 +200,7 @@
       },
       "status": "pass",
       "failure": null,
-      "duration_s": 61.192034006118774,
+      "duration_s": 44.87354779243469,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/chap_auto_ewars_weekly/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/nicaragua_weekly_subset.csv",
       "output_file": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/chap_auto_ewars_weekly/eval.nc",
@@ -210,7 +210,7 @@
       "platform_override": "linux/amd64",
       "returncode": 0,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:33:13+00:00"
+      "checked_at": "2026-05-04T22:03:43+00:00"
     },
     {
       "repo": "chap_pymc",
@@ -232,7 +232,7 @@
       },
       "status": "pass",
       "failure": null,
-      "duration_s": 398.703644990921,
+      "duration_s": 248.78363704681396,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/chap_pymc/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/chap_pymc/eval.nc",
@@ -242,7 +242,7 @@
       "platform_override": null,
       "returncode": 0,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:39:52+00:00"
+      "checked_at": "2026-05-04T22:07:52+00:00"
     },
     {
       "repo": "chapkit_ewars_model",
@@ -266,7 +266,7 @@
       },
       "status": "pass",
       "failure": null,
-      "duration_s": 313.8610758781433,
+      "duration_s": 41.3467800617218,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/chapkit_ewars_model/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/chapkit_ewars_model/eval.nc",
@@ -276,7 +276,7 @@
       "platform_override": null,
       "returncode": 0,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:45:14+00:00"
+      "checked_at": "2026-05-04T22:08:37+00:00"
     },
     {
       "repo": "chapkit_minimalist_example_py",
@@ -295,7 +295,7 @@
       },
       "status": "pass",
       "failure": null,
-      "duration_s": 84.04314494132996,
+      "duration_s": 19.226444959640503,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/chapkit_minimalist_example_py/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/chapkit_minimalist_example_py/eval.nc",
@@ -305,7 +305,7 @@
       "platform_override": null,
       "returncode": 0,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:47:02+00:00"
+      "checked_at": "2026-05-04T22:09:01+00:00"
     },
     {
       "repo": "chapkit_minimalist_example_r",
@@ -324,7 +324,7 @@
       },
       "status": "pass",
       "failure": null,
-      "duration_s": 36.34686613082886,
+      "duration_s": 11.078591108322144,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/chapkit_minimalist_example_r/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/chapkit_minimalist_example_r/eval.nc",
@@ -334,7 +334,7 @@
       "platform_override": null,
       "returncode": 0,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:48:07+00:00"
+      "checked_at": "2026-05-04T22:09:15+00:00"
     },
     {
       "repo": "chapkit_simple_multistep_model",
@@ -357,7 +357,7 @@
       },
       "status": "pass",
       "failure": null,
-      "duration_s": 34.438745975494385,
+      "duration_s": 11.08431887626648,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/chapkit_simple_multistep_model/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/_data/chapkit_simple_multistep_model/data.csv",
       "output_file": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/chapkit_simple_multistep_model/eval.nc",
@@ -367,7 +367,7 @@
       "platform_override": null,
       "returncode": 0,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:49:01+00:00"
+      "checked_at": "2026-05-04T22:09:31+00:00"
     },
     {
       "repo": "chtorch",
@@ -388,7 +388,7 @@
       },
       "status": "pass",
       "failure": null,
-      "duration_s": 48.35051918029785,
+      "duration_s": 24.57168674468994,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/chtorch/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/chtorch/eval.nc",
@@ -398,7 +398,7 @@
       "platform_override": null,
       "returncode": 0,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:49:50+00:00"
+      "checked_at": "2026-05-04T22:09:56+00:00"
     },
     {
       "repo": "D-FENSE---LNCC-ARp-2025-1",
@@ -417,7 +417,7 @@
       },
       "status": "pass",
       "failure": null,
-      "duration_s": 7.729340076446533,
+      "duration_s": 24.999012231826782,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/D-FENSE---LNCC-ARp-2025-1/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/D-FENSE---LNCC-ARp-2025-1/eval.nc",
@@ -427,7 +427,7 @@
       "platform_override": "linux/amd64",
       "returncode": 0,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:50:00+00:00"
+      "checked_at": "2026-05-04T22:10:23+00:00"
     },
     {
       "repo": "epidemiar_example_model",
@@ -450,7 +450,7 @@
       },
       "status": "fail",
       "failure": "nonzero_exit",
-      "duration_s": 6.249054908752441,
+      "duration_s": 35.338521003723145,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/epidemiar_example_model/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/_data/epidemiar_example_model/data.csv",
       "output_file": null,
@@ -460,7 +460,7 @@
       "platform_override": "linux/amd64",
       "returncode": 1,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:50:07+00:00"
+      "checked_at": "2026-05-04T22:11:00+00:00"
     },
     {
       "repo": "ewars_per_district",
@@ -490,7 +490,7 @@
       },
       "status": "fail",
       "failure": "docker_pull_failed",
-      "duration_s": 7.050906181335449,
+      "duration_s": 26.672935962677002,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/ewars_per_district/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": null,
@@ -500,7 +500,7 @@
       "platform_override": "linux/amd64",
       "returncode": 1,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:50:15+00:00"
+      "checked_at": "2026-05-04T22:11:28+00:00"
     },
     {
       "repo": "ewars_template",
@@ -528,7 +528,7 @@
       },
       "status": "pass",
       "failure": null,
-      "duration_s": 43.47098207473755,
+      "duration_s": 269.6983549594879,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/ewars_template/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/ewars_template/eval.nc",
@@ -538,7 +538,7 @@
       "platform_override": "linux/amd64",
       "returncode": 0,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:51:00+00:00"
+      "checked_at": "2026-05-04T22:15:59+00:00"
     },
     {
       "repo": "Exponential_smoothing_state_space_model",
@@ -564,7 +564,7 @@
       },
       "status": "fail",
       "failure": "docker_image_missing_runtime",
-      "duration_s": 9.13447904586792,
+      "duration_s": 24.400123119354248,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/Exponential_smoothing_state_space_model/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": null,
@@ -574,7 +574,7 @@
       "platform_override": "linux/amd64",
       "returncode": 1,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:51:10+00:00"
+      "checked_at": "2026-05-04T22:16:24+00:00"
     },
     {
       "repo": "INLA_baseline_model",
@@ -602,7 +602,7 @@
       },
       "status": "pass",
       "failure": null,
-      "duration_s": 43.74786162376404,
+      "duration_s": 42.228617906570435,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/INLA_baseline_model/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/INLA_baseline_model/eval.nc",
@@ -612,7 +612,7 @@
       "platform_override": "linux/amd64",
       "returncode": 0,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:51:55+00:00"
+      "checked_at": "2026-05-04T22:17:08+00:00"
     },
     {
       "repo": "LaCiD-UFRN-ARIMAX",
@@ -640,7 +640,7 @@
       },
       "status": "pass",
       "failure": null,
-      "duration_s": 54.66864609718323,
+      "duration_s": 22.60673999786377,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/LaCiD-UFRN-ARIMAX/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/LaCiD-UFRN-ARIMAX/eval.nc",
@@ -650,7 +650,7 @@
       "platform_override": "linux/amd64",
       "returncode": 0,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:52:50+00:00"
+      "checked_at": "2026-05-04T22:17:31+00:00"
     },
     {
       "repo": "Madagascar_ARIMA",
@@ -673,7 +673,7 @@
       },
       "status": "pass",
       "failure": null,
-      "duration_s": 14.365539789199829,
+      "duration_s": 13.700387716293335,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/Madagascar_ARIMA/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/_data/Madagascar_ARIMA/data.csv",
       "output_file": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/Madagascar_ARIMA/eval.nc",
@@ -683,7 +683,7 @@
       "platform_override": "linux/amd64",
       "returncode": 0,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:53:06+00:00"
+      "checked_at": "2026-05-04T22:17:46+00:00"
     },
     {
       "repo": "mean",
@@ -704,7 +704,7 @@
       },
       "status": "pass",
       "failure": null,
-      "duration_s": 16.68798589706421,
+      "duration_s": 16.21695303916931,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/mean/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/mean/eval.nc",
@@ -714,7 +714,7 @@
       "platform_override": "linux/amd64",
       "returncode": 0,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:53:24+00:00"
+      "checked_at": "2026-05-04T22:18:04+00:00"
     },
     {
       "repo": "minimal_template_example",
@@ -733,17 +733,17 @@
       },
       "status": "fail",
       "failure": "model_runtime_error",
-      "duration_s": 6.817464113235474,
+      "duration_s": 5.298788070678711,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/minimal_template_example/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": null,
-      "error_excerpt": "    raise ModelFailedException(str(e)) from e\nchap_core.exceptions.ModelFailedException: Run (ID 'fae36f3b90a84f5ab72081d2ca0afeb3') failed",
+      "error_excerpt": "    raise ModelFailedException(str(e)) from e\nchap_core.exceptions.ModelFailedException: Run (ID 'dd773eae28cf4fdcb07384d35ccd55c0') failed",
       "note": "data=curated+geo",
       "suggestion": "Model's train/predict script failed at runtime. Inspect the run.log for the underlying error — common causes: undeclared covariates, missing R/Python deps, or data-shape assumptions in the model script.",
       "platform_override": null,
       "returncode": 1,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:53:31+00:00"
+      "checked_at": "2026-05-04T22:18:09+00:00"
     },
     {
       "repo": "rwanda_random_forest",
@@ -762,7 +762,7 @@
       },
       "status": "fail",
       "failure": "model_runtime_error",
-      "duration_s": 9.672833919525146,
+      "duration_s": 9.984132289886475,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/rwanda_random_forest/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": null,
@@ -772,7 +772,7 @@
       "platform_override": null,
       "returncode": 1,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:53:41+00:00"
+      "checked_at": "2026-05-04T22:18:20+00:00"
     },
     {
       "repo": "rwanda_sarimax",
@@ -791,7 +791,7 @@
       },
       "status": "pass",
       "failure": null,
-      "duration_s": 12.749339818954468,
+      "duration_s": 12.963567018508911,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/rwanda_sarimax/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/rwanda_sarimax/eval.nc",
@@ -801,7 +801,7 @@
       "platform_override": "linux/amd64",
       "returncode": 0,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:53:55+00:00"
+      "checked_at": "2026-05-04T22:18:34+00:00"
     },
     {
       "repo": "Vietnam-dengue-superensemble",
@@ -836,7 +836,7 @@
       },
       "status": "fail",
       "failure": "nonzero_exit",
-      "duration_s": 13.784364938735962,
+      "duration_s": 13.732542991638184,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/Vietnam-dengue-superensemble/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/_data/Vietnam-dengue-superensemble/data.csv",
       "output_file": null,
@@ -846,7 +846,7 @@
       "platform_override": "linux/amd64",
       "returncode": 1,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:54:10+00:00"
+      "checked_at": "2026-05-04T22:18:48+00:00"
     },
     {
       "repo": "XGBoost_for_Malawi",
@@ -876,7 +876,7 @@
       },
       "status": "pass",
       "failure": null,
-      "duration_s": 105.31844019889832,
+      "duration_s": 90.08701682090759,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/XGBoost_for_Malawi/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/XGBoost_for_Malawi/eval.nc",
@@ -886,7 +886,7 @@
       "platform_override": "linux/amd64",
       "returncode": 0,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:55:58+00:00"
+      "checked_at": "2026-05-04T22:20:20+00:00"
     },
     {
       "repo": "Xiang_LSTM",
@@ -905,17 +905,17 @@
       },
       "status": "fail",
       "failure": "model_runtime_error",
-      "duration_s": 9.32819390296936,
+      "duration_s": 10.008272171020508,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/Xiang_LSTM/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": null,
-      "error_excerpt": "    raise ModelFailedException(str(e)) from e\nchap_core.exceptions.ModelFailedException: Run (ID 'd6d35cb0ef4a496a8ad591ce8829ea81') failed",
+      "error_excerpt": "    raise ModelFailedException(str(e)) from e\nchap_core.exceptions.ModelFailedException: Run (ID '26e8573927b24d078bb57567649923b4') failed",
       "note": "data=curated+geo",
       "suggestion": "Model's train/predict script failed at runtime. Inspect the run.log for the underlying error — common causes: undeclared covariates, missing R/Python deps, or data-shape assumptions in the model script.",
       "platform_override": null,
       "returncode": 1,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:56:07+00:00"
+      "checked_at": "2026-05-04T22:20:30+00:00"
     },
     {
       "repo": "Xiang_SVM",
@@ -934,7 +934,7 @@
       },
       "status": "pass",
       "failure": null,
-      "duration_s": 7.940626859664917,
+      "duration_s": 7.531116962432861,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/Xiang_SVM/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
       "output_file": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/Xiang_SVM/eval.nc",
@@ -944,9 +944,9 @@
       "platform_override": null,
       "returncode": 0,
       "timed_out": false,
-      "checked_at": "2026-05-04T20:56:16+00:00"
+      "checked_at": "2026-05-04T22:20:38+00:00"
     }
   ],
-  "started_at": "2026-05-04T20:27:54+00:00",
-  "finished_at": "2026-05-04T20:56:16+00:00"
+  "started_at": "2026-05-04T21:58:14+00:00",
+  "finished_at": "2026-05-04T22:20:38+00:00"
 }

@@ -1,0 +1,21 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Checker outputs (logs, clones, datasets, reports)
+work/
+work-*.log
+
+# chap-core artifacts that may end up here when chap eval runs from this dir
+runs/
+mlflow.db
+
+# Claude Code local state (scheduled task locks, etc.)
+.claude/

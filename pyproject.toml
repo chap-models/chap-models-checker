@@ -1,0 +1,115 @@
+[project]
+name = "chap-models-checker"
+version = "0.1.0"
+description = "Run chap eval against every repo in github.com/chap-models and produce a status report"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "typer>=0.17.0",
+    "httpx>=0.28.0",
+    "pyyaml>=6.0.2",
+    "rich>=14.0.0",
+    "pydantic>=2.11.0",
+    "geojson-pydantic>=2.1.1",
+]
+
+[project.scripts]
+chap-models-checker = "chap_models_checker.cli:app"
+
+[build-system]
+requires = ["uv_build>=0.9.0,<0.12.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "chap_models_checker"
+module-root = "src"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.20.2",
+    "pyright>=1.1.409",
+    "pytest>=9.0.3",
+    "ruff>=0.15.12",
+    "types-pyyaml>=6.0.12.20260408",
+]
+
+# ---- ruff -----------------------------------------------------------------
+
+[tool.ruff]
+target-version = "py313"
+line-length = 120
+
+[tool.ruff.lint]
+fixable = ["ALL"]
+select = ["E", "W", "F", "I", "D"]
+ignore = [
+    "D203", # one-blank-line-before-class — conflicts with D211
+    "D213", # multi-line-summary-second-line — conflicts with D212
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"src/chap_models_checker/__main__.py" = ["D100"]                       # script entrypoint, no module docstring needed
+"src/chap_models_checker/**/*.py"     = ["D102", "D105", "D107"]       # skip method/dunder/init docstrings (covered at class-level)
+"tests/**/*.py"                       = ["D"]                          # tests don't need docstrings
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
+
+# ---- mypy -----------------------------------------------------------------
+
+[tool.mypy]
+python_version = "3.13"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_unused_ignores = true
+strict_equality = true
+files = ["src/chap_models_checker"]
+
+# ---- pyright --------------------------------------------------------------
+
+[tool.pyright]
+include = ["src/chap_models_checker"]
+exclude = ["**/.venv", "**/__pycache__"]
+pythonVersion = "3.13"
+typeCheckingMode = "strict"
+useLibraryCodeForTypes = true
+reportPrivateUsage = false
+reportUnusedFunction = false
+reportUnknownMemberType = false
+reportUnknownArgumentType = false
+reportUnknownParameterType = false
+reportUnknownVariableType = false
+reportMissingTypeArgument = false
+reportMissingTypeStubs = false
+reportUnknownLambdaType = false
+reportMissingImports = "warning"
+reportMissingModuleSource = false
+
+# ---- pytest ---------------------------------------------------------------
+
+[tool.pytest.ini_options]
+# Tests live under ./tests (placeholder for now). collect_ignore_glob keeps
+# pytest off the chap-core artifact tree (`runs/...`) it occasionally drops
+# into the cwd, plus the checker's own work / clones / synthesized data.
+testpaths = ["tests"]
+norecursedirs = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "work",
+    "runs",
+    "external_models",
+    ".ruff_cache",
+    ".mypy_cache",
+    ".pyright",
+]

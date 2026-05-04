@@ -63,10 +63,9 @@ environment needs to force `linux/amd64` too.
 
 ---
 
-See [`findings.md`](findings.md) for the full table (per-repo style,
-period, covariates, cause, suggested fix, duration) and
-[`TRIAGE.md`](TRIAGE.md) for hand-written investigation notes per failing
-repo.
+See [`STATUS.md`](STATUS.md) for the same tables plus per-repo
+investigation notes and the forward-looking roadmap. The raw machine-
+readable snapshot lives in [`last_report.json`](last_report.json).
 
 This section is hand-updated and can drift. Refresh after a sweep with
 `make run` (or `make reclassify` to re-render from existing logs without
@@ -91,7 +90,7 @@ For each public repo under the `chap-models` org:
    `model_runtime_error`, `nonzero_exit`, …) and write a per-repo
    suggested fix.
 6. **Persist** results into `last_report.json` (commit-friendly snapshot)
-   and `findings.md` (markdown table of the same data).
+   and surface the headline tables in [`STATUS.md`](STATUS.md).
 
 ## Quick start
 
@@ -116,8 +115,7 @@ uv run chap-models-checker run --spec-only           # classify + extract spec, 
 | File | Purpose |
 | --- | --- |
 | `last_report.json` | Commit-friendly snapshot of the most recent sweep — pass/fail, durations, failure category, suggestion, run.log path, dataset path, per-row `checked_at` timestamps. |
-| `findings.md` | Markdown table of the same snapshot. Re-rendered from `last_report.json` whenever the sweep / `reclassify` runs. |
-| `TRIAGE.md` | Hand-written companion. Captures investigation notes, root-cause analysis, PR links, and follow-up work that the auto-generated `findings.md` can't see. Durable across snapshot refreshes. |
+| `STATUS.md` | Hand-maintained companion to the snapshot. Three sections: the headline pass/fail tables (refreshed from `last_report.json`), per-repo investigation notes, and the forward-looking roadmap. |
 | `work/<repo>/run.log` | Full `chap eval` output for each repo (stdout + stderr). Inspected by `reclassify` for re-bucketing. |
 | `work/<repo>/eval.nc` | NetCDF prediction output written by `chap eval` on success. |
 

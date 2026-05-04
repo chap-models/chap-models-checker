@@ -3,7 +3,8 @@
 Discovers public repos, classifies each as MLproject- or chapkit-style,
 prepares a matching dataset (curated when available, synthetic otherwise),
 runs `chap eval` via `uvx --from chap-core`, and persists results to
-`last_report.json` plus a `findings.md` summary.
+`last_report.json` (the snapshot the hand-maintained STATUS.md is
+summarised from).
 """
 
 from __future__ import annotations

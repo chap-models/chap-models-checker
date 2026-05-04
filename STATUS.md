@@ -1,11 +1,75 @@
-# chap-models triage notes
+# chap-models status
 
-Hand-written companion to the auto-generated `findings.md`. Captures
-investigation notes, root-cause analysis, and follow-up work that the
-sweep itself can't see — durable across snapshot refreshes.
+Single source of truth for the chap-models org sweep. Combines what
+used to be three files:
 
-`findings.md` answers "what's failing right now". This file answers
-"why, and what's the next move".
+- **Snapshot** — the headline pass/fail tables of the most recent sweep
+  (was `findings.md`).
+- **Per-repo notes** — hand-written investigation log for non-trivial
+  failures (was `TRIAGE.md`).
+- **Roadmap** — what's next, ordered by where the work has to happen
+  (was `ROADMAP.md`).
+
+`last_report.json` is the raw machine-readable snapshot the snapshot
+section is summarised from. Refresh this file after a sweep with
+`make run` (or `make reclassify` for re-render only).
+
+---
+
+## Snapshot
+
+As of the last full sweep (**2026-05-04T22:20Z**): **21 pass / 7 fail**
+of 28 chap-models repos.
+
+### Failing (7)
+
+| Repo | Failure |
+| --- | --- |
+| [`Exponential_smoothing_state_space_model`](https://github.com/chap-models/Exponential_smoothing_state_space_model) | `docker_image_missing_runtime` |
+| [`Vietnam-dengue-superensemble`](https://github.com/chap-models/Vietnam-dengue-superensemble) | `nonzero_exit` |
+| [`Xiang_LSTM`](https://github.com/chap-models/Xiang_LSTM) | `model_runtime_error` |
+| [`epidemiar_example_model`](https://github.com/chap-models/epidemiar_example_model) | `nonzero_exit` |
+| [`ewars_per_district`](https://github.com/chap-models/ewars_per_district) | `docker_pull_failed` |
+| [`minimal_template_example`](https://github.com/chap-models/minimal_template_example) | `model_runtime_error` |
+| [`rwanda_random_forest`](https://github.com/chap-models/rwanda_random_forest) | `model_runtime_error` |
+
+### Passing only with `--platform=linux/amd64` (13)
+
+These either pin an amd64-only base in their Dockerfile (chapkit-r-inla
+ships INLA x86_64 binaries only) or never built an arm64 manifest in the
+first place. Author should publish a multi-arch image, or the deploy
+environment needs to force `linux/amd64` too.
+
+| Repo | Style |
+| --- | --- |
+| [`auto_arima`](https://github.com/chap-models/auto_arima) | mlproject |
+| [`auto_ets`](https://github.com/chap-models/auto_ets) | mlproject |
+| [`baseline_model_for_sim_study`](https://github.com/chap-models/baseline_model_for_sim_study) | mlproject |
+| [`chap_auto_ewars`](https://github.com/chap-models/chap_auto_ewars) | mlproject |
+| [`chap_auto_ewars_weekly`](https://github.com/chap-models/chap_auto_ewars_weekly) | mlproject |
+| [`D-FENSE---LNCC-ARp-2025-1`](https://github.com/chap-models/D-FENSE---LNCC-ARp-2025-1) | mlproject |
+| [`ewars_template`](https://github.com/chap-models/ewars_template) | mlproject |
+| [`INLA_baseline_model`](https://github.com/chap-models/INLA_baseline_model) | mlproject |
+| [`LaCiD-UFRN-ARIMAX`](https://github.com/chap-models/LaCiD-UFRN-ARIMAX) | mlproject |
+| [`Madagascar_ARIMA`](https://github.com/chap-models/Madagascar_ARIMA) | mlproject |
+| [`mean`](https://github.com/chap-models/mean) | mlproject |
+| [`rwanda_sarimax`](https://github.com/chap-models/rwanda_sarimax) | mlproject |
+| [`XGBoost_for_Malawi`](https://github.com/chap-models/XGBoost_for_Malawi) | mlproject |
+
+### Passing cleanly on the host's native arch (8)
+
+| Repo | Style |
+| --- | --- |
+| [`auto_arima_chapkit`](https://github.com/chap-models/auto_arima_chapkit) | chapkit |
+| [`chap_pymc`](https://github.com/chap-models/chap_pymc) | mlproject |
+| [`chapkit_ewars_model`](https://github.com/chap-models/chapkit_ewars_model) | chapkit |
+| [`chapkit_minimalist_example_py`](https://github.com/chap-models/chapkit_minimalist_example_py) | chapkit |
+| [`chapkit_minimalist_example_r`](https://github.com/chap-models/chapkit_minimalist_example_r) | chapkit |
+| [`chapkit_simple_multistep_model`](https://github.com/chap-models/chapkit_simple_multistep_model) | chapkit |
+| [`chtorch`](https://github.com/chap-models/chtorch) | mlproject |
+| [`Xiang_SVM`](https://github.com/chap-models/Xiang_SVM) | mlproject |
+
+---
 
 ## Migration to chapkit-images
 
@@ -40,7 +104,9 @@ The canonical replacement for legacy / private docker images is
 | `minimal_template_example`                  | [#2](https://github.com/chap-models/minimal_template_example/pull/2)                            | Open   | Same `KeyError: 'user_option_values'` as Xiang_LSTM (fixed via `.get()` defaults), plus drop dead RMSE return that read `disease_cases` from a target-less future CSV. |
 | `rwanda_random_forest`                      | [#1](https://github.com/chap-models/rwanda_random_forest/pull/1)                                | Open   | Replace deprecated `sklearn` PyPI stub with `scikit-learn` in `pyenv.yaml`; cap `GroupKFold(n_splits=5)` to `min(5, n_locations)` so the test dataset's 3 locations don't crash CV setup. |
 
-## Per-repo notes
+---
+
+## Per-repo investigation notes
 
 ### `Exponential_smoothing_state_space_model` — partial fix shipped
 
@@ -96,40 +162,14 @@ writes a `.geojson` when `spec.requires_geo` is true — but chap-core's
 `extra_forbidden`, so an MLproject can't declare it. The model
 silently lacks the polygons signal, command formatting fails.
 
-**Why the surface fix isn't enough:** Tested locally against
-`laos_subset.csv` (which has a sibling geojson, so chap-core auto-finds
-it and `{polygons}` substitution works) — the model gets past the
-formatting and into `predict.R`, where it crashes with
-`Error in $<-.data.frame... replacement has 0 rows, data has 102`
-while computing `dtr` (diurnal temperature range). The model relies
-on Vietnam-specific covariates not present in any curated chap-core
-dataset.
-
 **Follow-up done:** chap-models-checker now infers `requires_geo`
 from a `{polygons}` placeholder in any MLproject `entry_points`
-command (commit `4bf512d`). The synth path now writes a sibling
-`.geojson` for Vietnam-dengue-superensemble; the
-`ModelConfigurationException` formatting failure is gone.
+command. The synth path now writes a sibling `.geojson` for
+Vietnam-dengue-superensemble; the `ModelConfigurationException`
+formatting failure is gone.
 
-**Next layer that surfaced after the fix:** chap-core's dataset
-loader joins the geojson into the `DataSet` and ends up with
-`DataSet({})` (zero locations, zero rows). The model's MLproject
-suggests reducing `--backtest-params.n-periods` or widening
-`max_prediction_length`, but tested locally with
-`max_prediction_length: 12` and `n_periods=1, n_splits=1`: same
-empty-dataset error. So `max_prediction_length: 1` is a misleading
-hint, not the actual cause.
-
-The likely root cause is the synth geojson's properties being too
-sparse. `synthesize_geojson` writes `{"id": "location_<n>"}` only;
-`laos_subset.geojson` (which works) carries `code`, `name`, `level`,
-`parent`, `parentGraph`, `groups`, `id`. chap-core's geojson→dataset
-merge probably needs at least `name` or `parent` to produce a usable
-hierarchy.
-
-**Real root cause (found):** chap-core's
-`set_polygons` uses **top-level `feature.id`** to filter dataset
-locations:
+**Real root cause (found):** chap-core's `set_polygons` uses
+**top-level `feature.id`** to filter dataset locations:
 
 ```python
 # chap_core/spatio_temporal_data/temporal_dataclass.py:201
@@ -138,12 +178,8 @@ self._data_dict = {loc: data for loc, data in ... if loc in polygon_ids}
 ```
 
 `synthesize_geojson` was setting only `properties.id`, leaving
-`feature.id` as `None`. So `polygon_ids` was `{None}`, no CSV
-location matched, every row got dropped — `DataSet({})`.
-
-Property enrichment wasn't the issue at all; the missing field was
-the top-level `Feature.id`. Fixed in `synthesize_geojson` by setting
-both `id=` and `properties.id` to the same `location_<n>` string.
+`feature.id` as `None`. Fixed by setting both `id=` and
+`properties.id` to the same `location_<n>` string.
 
 **Result after the fix:** chap-core now joins synthetic polygons to
 synthetic dataset rows correctly. Vietnam-dengue-superensemble's
@@ -204,25 +240,112 @@ idx.pred <- which(generated$data$time_period %in% future_periods &
 (Untested — needs the model author or someone familiar with INLA-EWARS
 output schemas to validate.)
 
-**Net effect of the deferred swap:** would have moved this repo from
-`docker_pull_failed` -> `model_runtime_error`. The plan's "progress,
-not regression" still holds, but a green flip needs the predict.R
-patch first. No PR opened until that work is done.
+---
 
-## Remaining failures
+## Roadmap
 
-After the docker-image batch + the re-scaffold + checker improvements
-landed, **seven failures remain** out of 28 repos (21 pass / 7 fail
-in the 2026-05-04 20:24 -> 20:56 full sweep). Each needs the model
-author or someone familiar with the model code to push a fix; they
-aren't minimal-touch candidates from the checker side.
+What's next, grouped by where the work has to happen. Targets relative
+to the snapshot above.
 
-| Repo                                        | Failure              | Note                                                                                                                                |
-| ------------------------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `Exponential_smoothing_state_space_model`   | `docker_image_missing_runtime` | YAML fix ([#1](https://github.com/chap-models/Exponential_smoothing_state_space_model/pull/1)) shipped; the bucket flipped from `invalid_mlproject` but the model is still unimplemented (empty `train.R` stub, see per-repo notes above). |
-| `epidemiar_example_model`                   | `nonzero_exit`       | R-side `seq.int()` / `dplyr::reframe()` error against synthetic data. Data-shape sensitive.                                          |
-| `ewars_per_district`                        | `docker_pull_failed` | Image swap exposes a model-side NaN bug in `predict.R` (`idx.pred` includes historic NA rows). See per-repo notes above.            |
-| `Vietnam-dengue-superensemble`              | `nonzero_exit`       | Synth-geo path now works (chap-models-checker commit `4bf512d` + `10b95e2`). Underlying failure is INLA-on-noise convergence; needs Vietnam-specific data or robust covariates. |
-| `minimal_template_example`                  | `model_runtime_error`| Pure chap-core default base; train script bug. Not yet investigated.                                                                |
-| `Xiang_LSTM`                                | `model_runtime_error`| PR [#2](https://github.com/chap-models/Xiang_LSTM/pull/2) open with config + horizon defensive edits. Awaiting merge.                |
-| `rwanda_random_forest`                      | `model_runtime_error`| Pure chap-core default base; train script bug. Not yet investigated.                                                                |
+### In flight — waiting on PR merge
+
+Nothing for us to do; once the model owners merge, the dashboard
+moves to **24 pass / 4 fail**.
+
+| Repo | PR | Bucket flips |
+| --- | --- | --- |
+| [`Xiang_LSTM`](https://github.com/chap-models/Xiang_LSTM) | [#2](https://github.com/chap-models/Xiang_LSTM/pull/2) | `model_runtime_error` -> `pass` |
+| [`minimal_template_example`](https://github.com/chap-models/minimal_template_example) | [#2](https://github.com/chap-models/minimal_template_example/pull/2) | `model_runtime_error` -> `pass` |
+| [`rwanda_random_forest`](https://github.com/chap-models/rwanda_random_forest) | [#1](https://github.com/chap-models/rwanda_random_forest/pull/1) | `model_runtime_error` -> `pass` |
+
+### Tractable — fixable from our side
+
+#### 1. `ewars_per_district` predict.R patch
+
+Sketched above (`idx.pred` should restrict to `time_period`
+values that appear in `future_df`). Untested — would need a chap eval
+run with the proposed change to confirm the NaN forecast values go
+away.
+
+- Effort: ~1 PR, 5 lines in `predict.R`.
+- Risk: may expose a next-layer issue (INLA convergence on synth
+  data) without actually flipping the bucket green. Same shape as the
+  Vietnam fix — progress, not regression.
+
+#### 2. Multi-arch image batch (13 repos)
+
+13 repos pass only because the host pre-pulls their docker image with
+`--platform=linux/amd64`. They'd fail on a pure arm64 deploy.
+
+- Effort: 13 mostly-identical PRs (Dockerfile FROM tweak +
+  `docker buildx build --platform linux/amd64,linux/arm64`, or a
+  `chapkit-r-tidyverse` / `chapkit-r-inla` swap that already ships
+  multi-arch). Some can't go multi-arch at all (R-INLA ships x86_64
+  binaries only); those need a documented platform pin instead.
+- Doesn't change the dashboard count (they're already `pass`), but
+  removes the ⚠ caveat across the board.
+
+### Model-author outreach — file issues, not PRs
+
+These three need real model work that we can't reasonably do without
+domain knowledge. Plan: open one issue per repo, linking the run.log
+evidence + the relevant per-repo notes section above.
+
+| Repo | Issue summary |
+| --- | --- |
+| [`Exponential_smoothing_state_space_model`](https://github.com/chap-models/Exponential_smoothing_state_space_model) | `train.R` is an empty stub plus arg-count mismatch with the MLproject command. Needs a working ETS implementation. |
+| [`Vietnam-dengue-superensemble`](https://github.com/chap-models/Vietnam-dengue-superensemble) | INLA-on-noise: needs Vietnam-specific covariates that no chap-core curated dataset provides. Either ship a Vietnam dataset, or make the train/predict scripts robust to missing optional covariates. |
+| [`epidemiar_example_model`](https://github.com/chap-models/epidemiar_example_model) | R-side `dplyr::reframe()` / `seq.int()` crash on synthetic data. Likely data-shape sensitivity. |
+
+### Checker improvements — this repo
+
+Debt we've discussed but skipped, ordered by effort vs. value.
+
+#### a. Auto-update the Snapshot section
+
+Today the Snapshot section above is hand-edited; it'll drift the
+moment a sweep runs without me remembering to update it. Add markdown
+markers (`<!-- BEGIN-SNAPSHOT -->` / `<!-- END-SNAPSHOT -->`) and a
+`chap-models-checker render-status` subcommand that rewrites the
+section from `last_report.json`. Wire into `make run` so it stays in
+sync automatically.
+
+- Effort: ~1 day. New CLI subcommand + small splicer.
+- Value: high. Eliminates the drift class of bug (e.g. the stale
+  `minimalist_example_r_chapkit` ghost row that we caught manually).
+
+#### b. Scheduled / cron sweep
+
+`make run` is invoked manually. A nightly cron (or GitHub Actions
+schedule + commit-back) would surface model regressions within a day.
+
+- Effort: ~half a day. GitHub Actions workflow with a `schedule:`
+  trigger + `git commit` + `git push` of the snapshot delta. Needs
+  Docker-on-CI for the chapkit Docker path, which the existing
+  `ci.yml` job pattern already proves works.
+- Value: medium-high.
+- Caveat: each sweep takes ~20 min; nightly is fine, hourly probably
+  not.
+
+#### c. Richer synth geojson properties
+
+`synthesize_geojson` currently writes only `Feature.id` and
+`properties.id`. We've already proven (Vietnam debugging) that this is
+enough for chap-core's join. But if a future model reads other
+properties (`name`, `parent`, `level`, …), it'll fail in a confusing
+way. Pre-emptive: write a richer property bag matching the laos
+shape.
+
+- Effort: ~1 hour. Defer until a real model needs it.
+
+### Suggested order
+
+1. File the 3 outreach issues (cheap, unblocks waiting on others).
+2. Multi-arch image batch (clears 13 ⚠ caveats, mostly mechanical).
+3. `ewars_per_district` predict.R patch attempt.
+4. Auto-update Snapshot section (eliminates a recurring drift).
+5. Scheduled sweep workflow.
+
+Items 1-3 are model-side work. Items 4-5 are this repo's debt. Items 1
+and 4 are the highest-value-per-hour entries; do those first if time
+is constrained.

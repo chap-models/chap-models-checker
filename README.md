@@ -8,7 +8,12 @@ against the current `chap-core`.
 ## Current status
 
 As of the last full sweep (2026-05-04T22:20Z): **21 pass / 7 fail** of 28
-chap-models repos.
+chap-models repos. The 21 passes split into 8 fully clean and 13 that
+only succeed because the sweep host pre-pulled their docker image with
+`--platform=linux/amd64` (the model authors haven't published multi-arch
+images; those 13 would fail on a pure arm64 deploy).
+
+### Failing (7)
 
 | Repo | Failure |
 | --- | --- |
@@ -19,6 +24,44 @@ chap-models repos.
 | [`ewars_per_district`](https://github.com/chap-models/ewars_per_district) | `docker_pull_failed` |
 | [`minimal_template_example`](https://github.com/chap-models/minimal_template_example) | `model_runtime_error` |
 | [`rwanda_random_forest`](https://github.com/chap-models/rwanda_random_forest) | `model_runtime_error` |
+
+### Passing only with `--platform=linux/amd64` (13)
+
+These either pin an amd64-only base in their Dockerfile (chapkit-r-inla
+ships INLA x86_64 binaries only) or never built an arm64 manifest in the
+first place. Author should publish a multi-arch image, or the deploy
+environment needs to force `linux/amd64` too.
+
+| Repo | Style |
+| --- | --- |
+| [`auto_arima`](https://github.com/chap-models/auto_arima) | mlproject |
+| [`auto_ets`](https://github.com/chap-models/auto_ets) | mlproject |
+| [`baseline_model_for_sim_study`](https://github.com/chap-models/baseline_model_for_sim_study) | mlproject |
+| [`chap_auto_ewars`](https://github.com/chap-models/chap_auto_ewars) | mlproject |
+| [`chap_auto_ewars_weekly`](https://github.com/chap-models/chap_auto_ewars_weekly) | mlproject |
+| [`D-FENSE---LNCC-ARp-2025-1`](https://github.com/chap-models/D-FENSE---LNCC-ARp-2025-1) | mlproject |
+| [`ewars_template`](https://github.com/chap-models/ewars_template) | mlproject |
+| [`INLA_baseline_model`](https://github.com/chap-models/INLA_baseline_model) | mlproject |
+| [`LaCiD-UFRN-ARIMAX`](https://github.com/chap-models/LaCiD-UFRN-ARIMAX) | mlproject |
+| [`Madagascar_ARIMA`](https://github.com/chap-models/Madagascar_ARIMA) | mlproject |
+| [`mean`](https://github.com/chap-models/mean) | mlproject |
+| [`rwanda_sarimax`](https://github.com/chap-models/rwanda_sarimax) | mlproject |
+| [`XGBoost_for_Malawi`](https://github.com/chap-models/XGBoost_for_Malawi) | mlproject |
+
+### Passing cleanly on the host's native arch (8)
+
+| Repo | Style |
+| --- | --- |
+| [`auto_arima_chapkit`](https://github.com/chap-models/auto_arima_chapkit) | chapkit |
+| [`chap_pymc`](https://github.com/chap-models/chap_pymc) | mlproject |
+| [`chapkit_ewars_model`](https://github.com/chap-models/chapkit_ewars_model) | chapkit |
+| [`chapkit_minimalist_example_py`](https://github.com/chap-models/chapkit_minimalist_example_py) | chapkit |
+| [`chapkit_minimalist_example_r`](https://github.com/chap-models/chapkit_minimalist_example_r) | chapkit |
+| [`chapkit_simple_multistep_model`](https://github.com/chap-models/chapkit_simple_multistep_model) | chapkit |
+| [`chtorch`](https://github.com/chap-models/chtorch) | mlproject |
+| [`Xiang_SVM`](https://github.com/chap-models/Xiang_SVM) | mlproject |
+
+---
 
 See [`findings.md`](findings.md) for the full table (per-repo style,
 period, covariates, cause, suggested fix, duration) and

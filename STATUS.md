@@ -285,17 +285,18 @@ away.
 - Doesn't change the dashboard count (they're already `pass`), but
   removes the ⚠ caveat across the board.
 
-### Model-author outreach — file issues, not PRs
+### Model-author outreach — issues filed
 
 These three need real model work that we can't reasonably do without
-domain knowledge. Plan: open one issue per repo, linking the run.log
-evidence + the relevant per-repo notes section above.
+domain knowledge. Issues filed against each repo with the run.log
+evidence and a suggested resolution; resolution is on the model
+authors.
 
-| Repo | Issue summary |
+| Repo | Issue |
 | --- | --- |
-| [`Exponential_smoothing_state_space_model`](https://github.com/chap-models/Exponential_smoothing_state_space_model) | `train.R` is an empty stub plus arg-count mismatch with the MLproject command. Needs a working ETS implementation. |
-| [`Vietnam-dengue-superensemble`](https://github.com/chap-models/Vietnam-dengue-superensemble) | INLA-on-noise: needs Vietnam-specific covariates that no chap-core curated dataset provides. Either ship a Vietnam dataset, or make the train/predict scripts robust to missing optional covariates. |
-| [`epidemiar_example_model`](https://github.com/chap-models/epidemiar_example_model) | R-side `dplyr::reframe()` / `seq.int()` crash on synthetic data. Likely data-shape sensitivity. |
+| [`Exponential_smoothing_state_space_model`](https://github.com/chap-models/Exponential_smoothing_state_space_model) | [#2](https://github.com/chap-models/Exponential_smoothing_state_space_model/issues/2) — `train.R` empty stub + arg-count mismatch + undefined variable |
+| [`Vietnam-dengue-superensemble`](https://github.com/chap-models/Vietnam-dengue-superensemble) | [#1](https://github.com/chap-models/Vietnam-dengue-superensemble/issues/1) — needs Vietnam covariates / robust missing-data handling |
+| [`epidemiar_example_model`](https://github.com/chap-models/epidemiar_example_model) | [#1](https://github.com/chap-models/epidemiar_example_model/issues/1) — `dplyr::reframe()` / `seq.int()` crash on synthetic data |
 
 ### Checker improvements — this repo
 
@@ -340,12 +341,12 @@ shape.
 
 ### Suggested order
 
-1. File the 3 outreach issues (cheap, unblocks waiting on others).
+1. ~~File the 3 outreach issues~~ — done (links above).
 2. Multi-arch image batch (clears 13 ⚠ caveats, mostly mechanical).
 3. `ewars_per_district` predict.R patch attempt.
 4. Auto-update Snapshot section (eliminates a recurring drift).
 5. Scheduled sweep workflow.
 
-Items 1-3 are model-side work. Items 4-5 are this repo's debt. Items 1
-and 4 are the highest-value-per-hour entries; do those first if time
-is constrained.
+Items 2-3 are model-side work. Items 4-5 are this repo's debt. Item 4
+is the highest-value-per-hour entry now that the outreach issues are
+filed; do that first if time is constrained.

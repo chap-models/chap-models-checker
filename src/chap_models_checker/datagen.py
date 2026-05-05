@@ -16,11 +16,12 @@ import random
 from pathlib import Path
 from typing import Literal
 
+import httpx
 from geojson_pydantic import Feature, FeatureCollection, Point, Polygon
 from geojson_pydantic.types import Position2D
 from pydantic import BaseModel, ConfigDict
 
-from chap_models_checker.models import DataStrategy, ModelSpec, PeriodType
+from chap_models_checker.models import DataStrategy, ModelSpec, PeriodType, RepoInfo
 
 # ---------------------------- curated lookup --------------------------------
 
@@ -211,6 +212,62 @@ def synthesize_geojson(
     return out_path
 
 
+# ---------------------------- bundled-in-repo lookup ------------------------
+
+# Filenames to probe under the model's `input/` dir, in priority order.
+# `training_data.csv` is the most canonical name; the others cover real
+# patterns we've seen in the chap-models org (epidemiar's `laos_test_data.csv`,
+# the bare `data.csv` some templates use, and a reserved
+# `chap_eval_data.csv` for repos that prefer an explicit name).
+_BUNDLED_CSV_CANDIDATES: tuple[str, ...] = (
+    "input/training_data.csv",
+    "input/laos_test_data.csv",
+    "input/data.csv",
+    "input/chap_eval_data.csv",
+)
+
+
+def find_repo_bundled_data(
+    repo: RepoInfo,
+    cache_dir: Path,
+    *,
+    timeout: float = 30.0,
+) -> tuple[Path, Path | None] | None:
+    """Look for example data the model author bundled at ``input/`` in their repo.
+
+    Returns ``(csv, geojson|None)`` cached under ``cache_dir``, or ``None``
+    when no candidate file is reachable. Probes the names in
+    ``_BUNDLED_CSV_CANDIDATES`` in order via raw.githubusercontent (no
+    clone). When a CSV is found, looks for a sibling ``.geojson`` with
+    the same basename and downloads it if present.
+
+    Preferred over chap-core's curated lookup because the model author
+    knows best which data their model was tuned for. The synth fallback
+    still kicks in when nothing is bundled.
+    """
+    base = repo.raw_url_prefix
+    with httpx.Client(timeout=timeout, follow_redirects=True) as client:
+        for path in _BUNDLED_CSV_CANDIDATES:
+            url = f"{base}/{path}"
+            csv_resp = client.get(url)
+            if csv_resp.status_code == 404:
+                continue
+            if csv_resp.status_code != 200:
+                csv_resp.raise_for_status()
+            cache_dir.mkdir(parents=True, exist_ok=True)
+            csv_path = cache_dir / Path(path).name
+            csv_path.write_bytes(csv_resp.content)
+
+            geo_url = url[: -len(".csv")] + ".geojson"
+            geo_resp = client.get(geo_url)
+            geo_path: Path | None = None
+            if geo_resp.status_code == 200:
+                geo_path = csv_path.with_suffix(".geojson")
+                geo_path.write_bytes(geo_resp.content)
+            return csv_path, geo_path
+    return None
+
+
 # ---------------------------- top-level entry ------------------------------
 
 
@@ -220,27 +277,41 @@ def prepare_dataset(
     *,
     strategy: DataStrategy,
     example_data_dir: Path | None,
-    repo_name: str,
+    repo: RepoInfo,
 ) -> tuple[Path, Path | None, str]:
-    """Return ``(csv, geojson|None, source)`` where ``source`` is ``"curated"`` or ``"synthetic"``.
+    """Return ``(csv, geojson|None, source)``.
 
-    Invariant: when ``geojson`` is non-``None``, it lives next to the CSV with
-    the same basename + ``.geojson`` suffix. chap eval has no explicit
-    ``--geojson`` flag — it auto-discovers the sibling geojson. We therefore
-    enforce co-location here so the runner's ``+geo`` note isn't a lie.
+    ``source`` is one of ``"bundled"`` (model's own ``input/``),
+    ``"curated"`` (chap-core's example_data), or ``"synthetic"``.
+
+    Lookup order under ``hybrid`` (the default): bundled > curated > synth.
+    Under ``curated``: bundled > curated, and a hard error if neither
+    matches (no synth fallback). Under ``synthetic``: synth always.
+
+    Invariant: when ``geojson`` is non-``None``, it lives next to the CSV
+    with the same basename + ``.geojson`` suffix. chap eval has no
+    explicit ``--geojson`` flag — it auto-discovers the sibling geojson.
+    We enforce co-location here so the runner's ``+geo`` note isn't a lie.
     """
-    if strategy in ("curated", "hybrid") and example_data_dir is not None:
-        match = find_curated(spec, example_data_dir)
-        if match is not None:
-            csv_path, geo_path = match
-            return csv_path, _ensure_colocated_geojson(csv_path, geo_path), "curated"
+    if strategy in ("curated", "hybrid"):
+        bundled = find_repo_bundled_data(repo, workdir / "_bundled" / repo.name)
+        if bundled is not None:
+            csv_path, geo_path = bundled
+            return csv_path, _ensure_colocated_geojson(csv_path, geo_path), "bundled"
+
+        if example_data_dir is not None:
+            match = find_curated(spec, example_data_dir)
+            if match is not None:
+                csv_path, geo_path = match
+                return csv_path, _ensure_colocated_geojson(csv_path, geo_path), "curated"
+
         if strategy == "curated":
             raise RuntimeError(
-                f"No curated dataset matches {repo_name} "
+                f"No bundled or curated dataset for {repo.name} "
                 f"(period={spec.supported_period_type.value}, covariates={spec.required_covariates})"
             )
 
-    repo_dir = workdir / repo_name
+    repo_dir = workdir / repo.name
     repo_dir.mkdir(parents=True, exist_ok=True)
     csv_path = synthesize_csv(spec, repo_dir / "data.csv")
     synth_geo: Path | None = None

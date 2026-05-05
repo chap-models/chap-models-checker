@@ -178,7 +178,7 @@ def _prepare_data_or_fail(
             workdir / "_data",
             strategy=data_strategy,
             example_data_dir=example_data_dir,
-            repo_name=repo.name,
+            repo=repo,
         )
     except Exception as exc:  # noqa: BLE001
         return RunResult(

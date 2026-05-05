@@ -364,6 +364,89 @@ def test_entry_points_use_polygons_false_when_absent() -> None:
     assert spec._entry_points_use_polygons(data) is False
 
 
+def test_find_repo_bundled_data_returns_csv_and_geojson_when_present(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Regression: prepare_dataset must prefer the model's own input/training_data.csv."""
+
+    class _FakeResp:
+        def __init__(self, status_code: int, content: bytes = b"") -> None:
+            self.status_code = status_code
+            self.content = content
+
+        def raise_for_status(self) -> None:
+            if self.status_code >= 400:
+                raise RuntimeError(f"http {self.status_code}")
+
+    class _FakeClient:
+        def __init__(self, *_: object, **__: object) -> None:
+            pass
+
+        def __enter__(self) -> _FakeClient:
+            return self
+
+        def __exit__(self, *_: object) -> None:
+            return None
+
+        def get(self, url: str, *_: object, **__: object) -> _FakeResp:
+            if url.endswith("/input/training_data.csv"):
+                return _FakeResp(200, b"time_period,location\n2020-01,a\n")
+            if url.endswith("/input/training_data.geojson"):
+                return _FakeResp(200, b'{"type":"FeatureCollection","features":[]}')
+            return _FakeResp(404)
+
+    monkeypatch.setattr(datagen.httpx, "Client", _FakeClient)
+    repo = RepoInfo(
+        name="r",
+        full_name="o/r",
+        default_branch="main",
+        html_url="https://github.com/o/r",
+        clone_url="git@github.com:o/r.git",
+    )
+    out = datagen.find_repo_bundled_data(repo, tmp_path / "cache")
+    assert out is not None
+    csv_path, geo_path = out
+    assert csv_path.name == "training_data.csv"
+    assert csv_path.read_bytes().startswith(b"time_period,location")
+    assert geo_path is not None
+    assert geo_path.read_bytes().startswith(b'{"type":"FeatureCollection"')
+
+
+def test_find_repo_bundled_data_returns_none_when_nothing_present(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Regression: when no candidate path is reachable, return None so the caller falls through."""
+
+    class _FakeResp:
+        status_code = 404
+
+        def raise_for_status(self) -> None:
+            return None
+
+    class _FakeClient:
+        def __init__(self, *_: object, **__: object) -> None:
+            pass
+
+        def __enter__(self) -> _FakeClient:
+            return self
+
+        def __exit__(self, *_: object) -> None:
+            return None
+
+        def get(self, *_: object, **__: object) -> _FakeResp:
+            return _FakeResp()
+
+    monkeypatch.setattr(datagen.httpx, "Client", _FakeClient)
+    repo = RepoInfo(
+        name="r",
+        full_name="o/r",
+        default_branch="main",
+        html_url="https://github.com/o/r",
+        clone_url="git@github.com:o/r.git",
+    )
+    assert datagen.find_repo_bundled_data(repo, tmp_path / "cache") is None
+
+
 def test_synthesize_geojson_sets_top_level_feature_id(tmp_path: Path) -> None:
     """Regression: chap-core joins on feature.id; if it's missing, DataSet({}) results.
 

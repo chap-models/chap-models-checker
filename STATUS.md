@@ -18,22 +18,19 @@ section is summarised from. Refresh this file after a sweep with
 
 ## Snapshot
 
-As of the last full sweep (**2026-05-04T22:20Z**): **21 pass / 7 fail**
+As of the last full sweep (**2026-05-05T09:28Z**): **24 pass / 4 fail**
 of 28 chap-models repos.
 
-### Failing (7)
+### Failing (4)
 
 | Repo | Failure |
 | --- | --- |
-| [`Exponential_smoothing_state_space_model`](https://github.com/chap-models/Exponential_smoothing_state_space_model) | `docker_image_missing_runtime` |
-| [`Vietnam-dengue-superensemble`](https://github.com/chap-models/Vietnam-dengue-superensemble) | `nonzero_exit` |
-| [`Xiang_LSTM`](https://github.com/chap-models/Xiang_LSTM) | `model_runtime_error` |
-| [`epidemiar_example_model`](https://github.com/chap-models/epidemiar_example_model) | `nonzero_exit` |
-| [`ewars_per_district`](https://github.com/chap-models/ewars_per_district) | `docker_pull_failed` |
-| [`minimal_template_example`](https://github.com/chap-models/minimal_template_example) | `model_runtime_error` |
-| [`rwanda_random_forest`](https://github.com/chap-models/rwanda_random_forest) | `model_runtime_error` |
+| [`Exponential_smoothing_state_space_model`](https://github.com/chap-models/Exponential_smoothing_state_space_model) | `docker_image_missing_runtime` (issue [#2](https://github.com/chap-models/Exponential_smoothing_state_space_model/issues/2) — empty `train.R` stub) |
+| [`auto_arima_chapkit`](https://github.com/chap-models/auto_arima_chapkit) | `spec_fetch_failed` (transient: deadsnakes PPA unreachable during docker build) |
+| [`ewars_per_district`](https://github.com/chap-models/ewars_per_district) | `docker_pull_failed` (image swap exposes a model-side NaN bug; see notes below) |
+| [`minimal_template_example`](https://github.com/chap-models/minimal_template_example) | `model_runtime_error` (PR [#2](https://github.com/chap-models/minimal_template_example/pull/2) open) |
 
-### Passing only with `--platform=linux/amd64` (13)
+### Passing only with `--platform=linux/amd64` (15)
 
 These either pin an amd64-only base in their Dockerfile (chapkit-r-inla
 ships INLA x86_64 binaries only) or never built an arm64 manifest in the
@@ -48,26 +45,29 @@ environment needs to force `linux/amd64` too.
 | [`chap_auto_ewars`](https://github.com/chap-models/chap_auto_ewars) | mlproject |
 | [`chap_auto_ewars_weekly`](https://github.com/chap-models/chap_auto_ewars_weekly) | mlproject |
 | [`D-FENSE---LNCC-ARp-2025-1`](https://github.com/chap-models/D-FENSE---LNCC-ARp-2025-1) | mlproject |
+| [`epidemiar_example_model`](https://github.com/chap-models/epidemiar_example_model) | mlproject |
 | [`ewars_template`](https://github.com/chap-models/ewars_template) | mlproject |
 | [`INLA_baseline_model`](https://github.com/chap-models/INLA_baseline_model) | mlproject |
 | [`LaCiD-UFRN-ARIMAX`](https://github.com/chap-models/LaCiD-UFRN-ARIMAX) | mlproject |
 | [`Madagascar_ARIMA`](https://github.com/chap-models/Madagascar_ARIMA) | mlproject |
 | [`mean`](https://github.com/chap-models/mean) | mlproject |
 | [`rwanda_sarimax`](https://github.com/chap-models/rwanda_sarimax) | mlproject |
+| [`Vietnam-dengue-superensemble`](https://github.com/chap-models/Vietnam-dengue-superensemble) | mlproject |
 | [`XGBoost_for_Malawi`](https://github.com/chap-models/XGBoost_for_Malawi) | mlproject |
 
-### Passing cleanly on the host's native arch (8)
+### Passing cleanly on the host's native arch (9)
 
 | Repo | Style |
 | --- | --- |
-| [`auto_arima_chapkit`](https://github.com/chap-models/auto_arima_chapkit) | chapkit |
+| [`Xiang_LSTM`](https://github.com/chap-models/Xiang_LSTM) | mlproject |
+| [`Xiang_SVM`](https://github.com/chap-models/Xiang_SVM) | mlproject |
 | [`chap_pymc`](https://github.com/chap-models/chap_pymc) | mlproject |
 | [`chapkit_ewars_model`](https://github.com/chap-models/chapkit_ewars_model) | chapkit |
 | [`chapkit_minimalist_example_py`](https://github.com/chap-models/chapkit_minimalist_example_py) | chapkit |
 | [`chapkit_minimalist_example_r`](https://github.com/chap-models/chapkit_minimalist_example_r) | chapkit |
 | [`chapkit_simple_multistep_model`](https://github.com/chap-models/chapkit_simple_multistep_model) | chapkit |
 | [`chtorch`](https://github.com/chap-models/chtorch) | mlproject |
-| [`Xiang_SVM`](https://github.com/chap-models/Xiang_SVM) | mlproject |
+| [`rwanda_random_forest`](https://github.com/chap-models/rwanda_random_forest) | mlproject |
 
 ---
 
@@ -98,11 +98,12 @@ The canonical replacement for legacy / private docker images is
 | Repo                                        | PR                                                                                              | Status | Result                                                            |
 | ------------------------------------------- | ----------------------------------------------------------------------------------------------- | ------ | ----------------------------------------------------------------- |
 | `Exponential_smoothing_state_space_model`   | [#1](https://github.com/chap-models/Exponential_smoothing_state_space_model/pull/1)             | Merged | YAML-only: `invalid_mlproject` -> `docker_image_missing_runtime` (image lacks `forecast`; train.R is also a stub) |
-| `Xiang_LSTM`                                | [#2](https://github.com/chap-models/Xiang_LSTM/pull/2)                                          | Open   | Config + horizon defensive edits; expected to flip `model_runtime_error` -> green |
+| `Xiang_LSTM`                                | [#2](https://github.com/chap-models/Xiang_LSTM/pull/2)                                          | Merged | Config + horizon defensive edits. Green: `model_runtime_error` -> `pass` (~22s). |
 | `chapkit_minimalist_example_r` (was `minimalist_example_r_chapkit`) | [#1](https://github.com/chap-models/chapkit_minimalist_example_r/pull/1) | Merged | Renamed + re-scaffolded via `chapkit init --template shell-r`. Green: `schema_mismatch` -> `pass` (~11s). Follow-up [#2](https://github.com/chap-models/chapkit_minimalist_example_r/pull/2) refreshes README + adds GPL-3.0 LICENSE. |
 | `chapkit_minimalist_example_py` (new repo) | -                                                                                              | Shipped | Net-new chapkit port of [`dhis2-chap/minimalist_example_uv`](https://github.com/dhis2-chap/minimalist_example_uv) via `chapkit init --template shell-py`. Same sklearn `LinearRegression` model. Green: pass (~36s). |
 | `minimal_template_example`                  | [#2](https://github.com/chap-models/minimal_template_example/pull/2)                            | Open   | Same `KeyError: 'user_option_values'` as Xiang_LSTM (fixed via `.get()` defaults), plus drop dead RMSE return that read `disease_cases` from a target-less future CSV. |
-| `rwanda_random_forest`                      | [#1](https://github.com/chap-models/rwanda_random_forest/pull/1)                                | Open   | Replace deprecated `sklearn` PyPI stub with `scikit-learn` in `pyenv.yaml`; cap `GroupKFold(n_splits=5)` to `min(5, n_locations)` so the test dataset's 3 locations don't crash CV setup. |
+| `rwanda_random_forest`                      | [#1](https://github.com/chap-models/rwanda_random_forest/pull/1)                                | Merged | Replace deprecated `sklearn` PyPI stub with `scikit-learn` in `pyenv.yaml`; cap `GroupKFold(n_splits=5)` to `min(5, n_locations)`. Green: `model_runtime_error` -> `pass`. |
+| `Vietnam-dengue-superensemble`              | [#2](https://github.com/chap-models/Vietnam-dengue-superensemble/pull/2)                        | Merged | Set top-level `Feature.id` on every polygon in `input/historic_data.geojson` so chap-core's set_polygons join finds matches. Green: `nonzero_exit` -> `pass`. |
 
 ---
 
@@ -249,14 +250,11 @@ to the snapshot above.
 
 ### In flight — waiting on PR merge
 
-Nothing for us to do; once the model owners merge, the dashboard
-moves to **24 pass / 4 fail**.
+Just one outstanding; on merge the dashboard moves to **25 pass / 3 fail**.
 
 | Repo | PR | Bucket flips |
 | --- | --- | --- |
-| [`Xiang_LSTM`](https://github.com/chap-models/Xiang_LSTM) | [#2](https://github.com/chap-models/Xiang_LSTM/pull/2) | `model_runtime_error` -> `pass` |
 | [`minimal_template_example`](https://github.com/chap-models/minimal_template_example) | [#2](https://github.com/chap-models/minimal_template_example/pull/2) | `model_runtime_error` -> `pass` |
-| [`rwanda_random_forest`](https://github.com/chap-models/rwanda_random_forest) | [#1](https://github.com/chap-models/rwanda_random_forest/pull/1) | `model_runtime_error` -> `pass` |
 
 ### Tractable — fixable from our side
 

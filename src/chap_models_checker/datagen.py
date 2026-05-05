@@ -215,14 +215,21 @@ def synthesize_geojson(
 # ---------------------------- bundled-in-repo lookup ------------------------
 
 # Filenames to probe under the model's `input/` dir, in priority order.
-# `training_data.csv` is the most canonical name; the others cover real
-# patterns we've seen in the chap-models org (epidemiar's `laos_test_data.csv`,
-# the bare `data.csv` some templates use, and a reserved
-# `chap_eval_data.csv` for repos that prefer an explicit name).
+# Each name has been observed in the chap-models org pointing at a
+# chap-core-shaped dataset (canonical `time_period`, `location`,
+# `disease_cases` columns):
+#   - `training_data.csv` — most common canonical name.
+#   - `historic_data.csv` — Vietnam-dengue-superensemble's pattern.
+#   - `laos_test_data.csv` — epidemiar_example_model's bundled set.
+#   - `chap_eval_data.csv` — reserved for repos that prefer an explicit
+#     chap-marker name.
+# We deliberately avoid the bare `data.csv` because some repos ship a
+# `data.csv` in their own format (non-canonical time_period, missing
+# expected columns) for the model's internal loader, not for chap eval.
 _BUNDLED_CSV_CANDIDATES: tuple[str, ...] = (
     "input/training_data.csv",
+    "input/historic_data.csv",
     "input/laos_test_data.csv",
-    "input/data.csv",
     "input/chap_eval_data.csv",
 )
 

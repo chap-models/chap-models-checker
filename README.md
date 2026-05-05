@@ -7,25 +7,22 @@ against the current `chap-core`.
 
 ## Current status
 
-As of the last full sweep (2026-05-04T22:20Z): **21 pass / 7 fail** of 28
-chap-models repos. The 21 passes split into 8 fully clean and 13 that
+As of the last full sweep (2026-05-05T09:28Z): **24 pass / 4 fail** of 28
+chap-models repos. The 24 passes split into 9 fully clean and 15 that
 only succeed because the sweep host pre-pulled their docker image with
 `--platform=linux/amd64` (the model authors haven't published multi-arch
-images; those 13 would fail on a pure arm64 deploy).
+images; those 15 would fail on a pure arm64 deploy).
 
-### Failing (7)
+### Failing (4)
 
 | Repo | Failure |
 | --- | --- |
-| [`Exponential_smoothing_state_space_model`](https://github.com/chap-models/Exponential_smoothing_state_space_model) | `docker_image_missing_runtime` |
-| [`Vietnam-dengue-superensemble`](https://github.com/chap-models/Vietnam-dengue-superensemble) | `nonzero_exit` |
-| [`Xiang_LSTM`](https://github.com/chap-models/Xiang_LSTM) | `model_runtime_error` |
-| [`epidemiar_example_model`](https://github.com/chap-models/epidemiar_example_model) | `nonzero_exit` |
-| [`ewars_per_district`](https://github.com/chap-models/ewars_per_district) | `docker_pull_failed` |
-| [`minimal_template_example`](https://github.com/chap-models/minimal_template_example) | `model_runtime_error` |
-| [`rwanda_random_forest`](https://github.com/chap-models/rwanda_random_forest) | `model_runtime_error` |
+| [`Exponential_smoothing_state_space_model`](https://github.com/chap-models/Exponential_smoothing_state_space_model) | `docker_image_missing_runtime` (issue [#2](https://github.com/chap-models/Exponential_smoothing_state_space_model/issues/2) — empty `train.R` stub) |
+| [`auto_arima_chapkit`](https://github.com/chap-models/auto_arima_chapkit) | `spec_fetch_failed` (transient: deadsnakes PPA unreachable) |
+| [`ewars_per_district`](https://github.com/chap-models/ewars_per_district) | `docker_pull_failed` (image swap exposes a model-side NaN bug) |
+| [`minimal_template_example`](https://github.com/chap-models/minimal_template_example) | `model_runtime_error` (PR [#2](https://github.com/chap-models/minimal_template_example/pull/2) open) |
 
-### Passing only with `--platform=linux/amd64` (13)
+### Passing only with `--platform=linux/amd64` (15)
 
 These either pin an amd64-only base in their Dockerfile (chapkit-r-inla
 ships INLA x86_64 binaries only) or never built an arm64 manifest in the
@@ -40,26 +37,29 @@ environment needs to force `linux/amd64` too.
 | [`chap_auto_ewars`](https://github.com/chap-models/chap_auto_ewars) | mlproject |
 | [`chap_auto_ewars_weekly`](https://github.com/chap-models/chap_auto_ewars_weekly) | mlproject |
 | [`D-FENSE---LNCC-ARp-2025-1`](https://github.com/chap-models/D-FENSE---LNCC-ARp-2025-1) | mlproject |
+| [`epidemiar_example_model`](https://github.com/chap-models/epidemiar_example_model) | mlproject |
 | [`ewars_template`](https://github.com/chap-models/ewars_template) | mlproject |
 | [`INLA_baseline_model`](https://github.com/chap-models/INLA_baseline_model) | mlproject |
 | [`LaCiD-UFRN-ARIMAX`](https://github.com/chap-models/LaCiD-UFRN-ARIMAX) | mlproject |
 | [`Madagascar_ARIMA`](https://github.com/chap-models/Madagascar_ARIMA) | mlproject |
 | [`mean`](https://github.com/chap-models/mean) | mlproject |
 | [`rwanda_sarimax`](https://github.com/chap-models/rwanda_sarimax) | mlproject |
+| [`Vietnam-dengue-superensemble`](https://github.com/chap-models/Vietnam-dengue-superensemble) | mlproject |
 | [`XGBoost_for_Malawi`](https://github.com/chap-models/XGBoost_for_Malawi) | mlproject |
 
-### Passing cleanly on the host's native arch (8)
+### Passing cleanly on the host's native arch (9)
 
 | Repo | Style |
 | --- | --- |
-| [`auto_arima_chapkit`](https://github.com/chap-models/auto_arima_chapkit) | chapkit |
+| [`Xiang_LSTM`](https://github.com/chap-models/Xiang_LSTM) | mlproject |
+| [`Xiang_SVM`](https://github.com/chap-models/Xiang_SVM) | mlproject |
 | [`chap_pymc`](https://github.com/chap-models/chap_pymc) | mlproject |
 | [`chapkit_ewars_model`](https://github.com/chap-models/chapkit_ewars_model) | chapkit |
 | [`chapkit_minimalist_example_py`](https://github.com/chap-models/chapkit_minimalist_example_py) | chapkit |
 | [`chapkit_minimalist_example_r`](https://github.com/chap-models/chapkit_minimalist_example_r) | chapkit |
 | [`chapkit_simple_multistep_model`](https://github.com/chap-models/chapkit_simple_multistep_model) | chapkit |
 | [`chtorch`](https://github.com/chap-models/chtorch) | mlproject |
-| [`Xiang_SVM`](https://github.com/chap-models/Xiang_SVM) | mlproject |
+| [`rwanda_random_forest`](https://github.com/chap-models/rwanda_random_forest) | mlproject |
 
 ---
 

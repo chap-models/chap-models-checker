@@ -7,21 +7,22 @@ against the current `chap-core`.
 
 ## Current status
 
-As of the last full sweep (2026-05-06T11:26Z): **26 pass / 3 fail** of 29
-chap-models repos. The 26 passes split into 11 fully clean and 15 that
+As of the last full sweep (2026-05-11T09:45Z): **25 pass / 4 fail** of 29
+chap-models repos. The 25 passes split into 11 fully clean and 14 that
 only succeed because the sweep host pre-pulled their docker image with
 `--platform=linux/amd64` (the model authors haven't published multi-arch
-images; those 15 would fail on a pure arm64 deploy).
+images; those 14 would fail on a pure arm64 deploy).
 
-### Failing (3)
+### Failing (4)
 
 | Repo | Failure |
 | --- | --- |
-| [`Exponential_smoothing_state_space_model`](https://github.com/chap-models/Exponential_smoothing_state_space_model) | `docker_image_missing_runtime` — image lacks `forecast` package (issue [#2](https://github.com/chap-models/Exponential_smoothing_state_space_model/issues/2) open; the repo also has deeper rot beyond an image swap) |
+| [`Exponential_smoothing_state_space_model`](https://github.com/chap-models/Exponential_smoothing_state_space_model) | `docker_image_missing_runtime` — image lacks `forecast`; repo also has deeper rot beyond an image swap. No tracking issue (the original [#2](https://github.com/chap-models/Exponential_smoothing_state_space_model/issues/2) was scoped wrong and closed). |
 | [`ewars_per_district`](https://github.com/chap-models/ewars_per_district) | `docker_pull_failed` — PR [#1](https://github.com/chap-models/ewars_per_district/pull/1) (chapkit-r-inla swap + predict.R `idx.pred` filter) open |
 | [`minimal_template_example`](https://github.com/chap-models/minimal_template_example) | `model_runtime_error` — PR [#2](https://github.com/chap-models/minimal_template_example/pull/2) open |
+| [`Vietnam-dengue-superensemble`](https://github.com/chap-models/Vietnam-dengue-superensemble) | `prediction_length` — `max_prediction_length=1`, chap-core wraps to extend to 3; INLA crashes (`inla.inlaprogram.has.crashed`) inside the iterative predict. Regression after upstream commits 2026-05-06T13:20Z (was green on prior sweep with same bundled dataset). |
 
-### Passing only with `--platform=linux/amd64` (15)
+### Passing only with `--platform=linux/amd64` (14)
 
 These either pin an amd64-only base in their Dockerfile (chapkit-r-inla
 ships INLA x86_64 binaries only) or never built an arm64 manifest in the
@@ -43,7 +44,6 @@ environment needs to force `linux/amd64` too.
 | [`Madagascar_ARIMA`](https://github.com/chap-models/Madagascar_ARIMA) | mlproject |
 | [`mean`](https://github.com/chap-models/mean) | mlproject |
 | [`rwanda_sarimax`](https://github.com/chap-models/rwanda_sarimax) | mlproject |
-| [`Vietnam-dengue-superensemble`](https://github.com/chap-models/Vietnam-dengue-superensemble) | mlproject |
 | [`XGBoost_for_Malawi`](https://github.com/chap-models/XGBoost_for_Malawi) | mlproject |
 
 ### Passing cleanly on the host's native arch (11)

@@ -18,18 +18,19 @@ section is summarised from. Refresh this file after a sweep with
 
 ## Snapshot
 
-As of the last full sweep (**2026-05-06T11:26Z**): **26 pass / 3 fail**
+As of the last full sweep (**2026-05-11T09:45Z**): **25 pass / 4 fail**
 of 29 chap-models repos.
 
-### Failing (3)
+### Failing (4)
 
 | Repo | Failure |
 | --- | --- |
-| [`Exponential_smoothing_state_space_model`](https://github.com/chap-models/Exponential_smoothing_state_space_model) | `docker_image_missing_runtime` — `library(forecast)` fails (image lacks `forecast`). Issue [#2](https://github.com/chap-models/Exponential_smoothing_state_space_model/issues/2) open; the repo has rot beyond an image swap (see notes). |
+| [`Exponential_smoothing_state_space_model`](https://github.com/chap-models/Exponential_smoothing_state_space_model) | `docker_image_missing_runtime` — `library(forecast)` fails (image lacks `forecast`). Repo has rot beyond an image swap (see notes). No tracking issue; the original [#2](https://github.com/chap-models/Exponential_smoothing_state_space_model/issues/2) was scoped wrong and closed. |
 | [`ewars_per_district`](https://github.com/chap-models/ewars_per_district) | `docker_pull_failed` — PR [#1](https://github.com/chap-models/ewars_per_district/pull/1) open (chapkit-r-inla swap + predict.R `idx.pred` filter). |
 | [`minimal_template_example`](https://github.com/chap-models/minimal_template_example) | `model_runtime_error` — PR [#2](https://github.com/chap-models/minimal_template_example/pull/2) open. |
+| [`Vietnam-dengue-superensemble`](https://github.com/chap-models/Vietnam-dengue-superensemble) | `prediction_length` — model declares `max_prediction_length=1`, chap-core wraps it to extend to 3; INLA crashes (`inla.inlaprogram.has.crashed`) inside the iterative predict loop. Regression after upstream commits on 2026-05-06T13:20Z (was green on the 2026-05-06T11:26Z sweep with the same bundled dataset). |
 
-### Passing only with `--platform=linux/amd64` (15)
+### Passing only with `--platform=linux/amd64` (14)
 
 These either pin an amd64-only base in their Dockerfile (chapkit-r-inla
 ships INLA x86_64 binaries only) or never built an arm64 manifest in the
@@ -51,7 +52,6 @@ environment needs to force `linux/amd64` too.
 | [`Madagascar_ARIMA`](https://github.com/chap-models/Madagascar_ARIMA) | mlproject |
 | [`mean`](https://github.com/chap-models/mean) | mlproject |
 | [`rwanda_sarimax`](https://github.com/chap-models/rwanda_sarimax) | mlproject |
-| [`Vietnam-dengue-superensemble`](https://github.com/chap-models/Vietnam-dengue-superensemble) | mlproject |
 | [`XGBoost_for_Malawi`](https://github.com/chap-models/XGBoost_for_Malawi) | mlproject |
 
 ### Passing cleanly on the host's native arch (11)
@@ -286,16 +286,15 @@ away.
 
 ### Model-author outreach — issues filed
 
-These three need real model work that we can't reasonably do without
-domain knowledge. Issues filed against each repo with the run.log
-evidence and a suggested resolution; resolution is on the model
-authors.
+These need real model work that we can't reasonably do without domain
+knowledge. Issues filed against each repo with the run.log evidence and
+a suggested resolution; resolution is on the model authors.
 
-| Repo | Issue |
-| --- | --- |
-| [`Exponential_smoothing_state_space_model`](https://github.com/chap-models/Exponential_smoothing_state_space_model) | [#2](https://github.com/chap-models/Exponential_smoothing_state_space_model/issues/2) — `train.R` empty stub + arg-count mismatch + undefined variable |
-| [`Vietnam-dengue-superensemble`](https://github.com/chap-models/Vietnam-dengue-superensemble) | [#1](https://github.com/chap-models/Vietnam-dengue-superensemble/issues/1) — needs Vietnam covariates / robust missing-data handling |
-| [`epidemiar_example_model`](https://github.com/chap-models/epidemiar_example_model) | [#1](https://github.com/chap-models/epidemiar_example_model/issues/1) — `dplyr::reframe()` / `seq.int()` crash on synthetic data |
+| Repo | Issue | State |
+| --- | --- | --- |
+| [`epidemiar_example_model`](https://github.com/chap-models/epidemiar_example_model) | [#1](https://github.com/chap-models/epidemiar_example_model/issues/1) — `dplyr::reframe()` / `seq.int()` crash on synthetic data | open |
+| [`Exponential_smoothing_state_space_model`](https://github.com/chap-models/Exponential_smoothing_state_space_model) | [#2](https://github.com/chap-models/Exponential_smoothing_state_space_model/issues/2) — `train.R` empty stub framing | closed 2026-05-06 (scoped wrong — empty `train_chap` is canonical; the real rot needs a fresh issue) |
+| [`Vietnam-dengue-superensemble`](https://github.com/chap-models/Vietnam-dengue-superensemble) | [#1](https://github.com/chap-models/Vietnam-dengue-superensemble/issues/1) — needs Vietnam covariates / robust missing-data handling | closed 2026-05-05 (addressed by upstream commit `e89ac66`, which introduced a different INLA-crash regression — see 2026-05-11 snapshot) |
 
 ### Checker improvements — this repo
 

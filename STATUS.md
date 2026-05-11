@@ -18,19 +18,18 @@ section is summarised from. Refresh this file after a sweep with
 
 ## Snapshot
 
-As of the last full sweep (**2026-05-11T09:45Z**): **25 pass / 4 fail**
+As of the last full sweep (**2026-05-11T12:15Z**): **26 pass / 3 fail**
 of 29 chap-models repos.
 
-### Failing (4)
+### Failing (3)
 
 | Repo | Failure |
 | --- | --- |
 | [`Exponential_smoothing_state_space_model`](https://github.com/chap-models/Exponential_smoothing_state_space_model) | `docker_image_missing_runtime` — `library(forecast)` fails (image lacks `forecast`). Repo has rot beyond an image swap (see notes). No tracking issue; the original [#2](https://github.com/chap-models/Exponential_smoothing_state_space_model/issues/2) was scoped wrong and closed. |
-| [`ewars_per_district`](https://github.com/chap-models/ewars_per_district) | `docker_pull_failed` — PR [#1](https://github.com/chap-models/ewars_per_district/pull/1) open (chapkit-r-inla swap + predict.R `idx.pred` filter). |
 | [`minimal_template_example`](https://github.com/chap-models/minimal_template_example) | `model_runtime_error` — PR [#2](https://github.com/chap-models/minimal_template_example/pull/2) open. |
 | [`Vietnam-dengue-superensemble`](https://github.com/chap-models/Vietnam-dengue-superensemble) | `prediction_length` — model declares `max_prediction_length=1`, chap-core wraps it to extend to 3; INLA crashes (`inla.inlaprogram.has.crashed`) inside the iterative predict loop. Regression after upstream commits on 2026-05-06T13:20Z (was green on the 2026-05-06T11:26Z sweep with the same bundled dataset). |
 
-### Passing only with `--platform=linux/amd64` (14)
+### Passing only with `--platform=linux/amd64` (15)
 
 These either pin an amd64-only base in their Dockerfile (chapkit-r-inla
 ships INLA x86_64 binaries only) or never built an arm64 manifest in the
@@ -46,6 +45,7 @@ environment needs to force `linux/amd64` too.
 | [`chap_auto_ewars_weekly`](https://github.com/chap-models/chap_auto_ewars_weekly) | mlproject |
 | [`D-FENSE---LNCC-ARp-2025-1`](https://github.com/chap-models/D-FENSE---LNCC-ARp-2025-1) | mlproject |
 | [`epidemiar_example_model`](https://github.com/chap-models/epidemiar_example_model) | mlproject |
+| [`ewars_per_district`](https://github.com/chap-models/ewars_per_district) | mlproject |
 | [`ewars_template`](https://github.com/chap-models/ewars_template) | mlproject |
 | [`INLA_baseline_model`](https://github.com/chap-models/INLA_baseline_model) | mlproject |
 | [`LaCiD-UFRN-ARIMAX`](https://github.com/chap-models/LaCiD-UFRN-ARIMAX) | mlproject |
@@ -92,7 +92,7 @@ The canonical replacement for legacy / private docker images is
 | `auto_ets`            | [#1](https://github.com/chap-models/auto_ets/pull/1)                                        | Merged   | `ghcr.io/dhis2-chap/chapkit-r-tidyverse:latest`         | Green: `docker_pull_failed` -> `pass` |
 | `mean`                | [#1](https://github.com/chap-models/mean/pull/1)                                            | Merged   | `ghcr.io/dhis2-chap/chapkit-r-tidyverse:latest`         | Green: `docker_pull_failed` -> `pass` |
 | `XGBoost_for_Malawi`  | [#2](https://github.com/chap-models/XGBoost_for_Malawi/pull/2)                              | Merged   | `ghcr.io/dhis2-chap/chapkit-r-tidyverse:latest` (added) | Green: `docker_image_missing_runtime` -> `pass` |
-| `ewars_per_district`  | -                                                                                           | Deferred | n/a (see below)                                         | Image swap exposes a model bug        |
+| `ewars_per_district`  | [#1](https://github.com/chap-models/ewars_per_district/pull/1)                              | Merged   | `ghcr.io/dhis2-chap/chapkit-r-inla:latest`              | Green: `docker_pull_failed` -> `pass` (image swap + `predict.R` `idx.pred` future-period filter, ~213s). |
 
 ### Other shipped fixes
 
@@ -193,54 +193,32 @@ synth data. That's a model-on-noise numerical issue — out of scope
 for the checker — and the synth-geo path is correct now for any
 future geo-using model.
 
-### `ewars_per_district` — deferred
+### `ewars_per_district` — resolved 2026-05-11
 
-**What was attempted:** Swap `docker_env.image: docker_r_inla:latest`
-(unresolvable, no registry prefix) to
-`ghcr.io/dhis2-chap/chapkit-r-inla:latest`.
+PR [#1](https://github.com/chap-models/ewars_per_district/pull/1) merged
+2026-05-11T11:24Z. Two changes shipped together:
 
-**What happened:** The image swap works — chap-core pulls the new
-image, runs `Rscript train.R` and `Rscript predict.R` for every
-backtest split with no docker- or R-side error. The container exits
-clean. But chap-core's pandera schema check then rejects the merged
-predictions output:
+1. **Image swap.** `docker_env.image: docker_r_inla:latest`
+   (unresolvable, no registry prefix) → `ghcr.io/dhis2-chap/chapkit-r-inla:latest`.
+2. **`predict.R` idx.pred filter.** Original code did
+   `idx.pred <- which(is.na(casestopred))`, which picked up any
+   historic row whose `Cases` was `NA` alongside the intended future
+   rows. The fix restricts to time periods that actually appear in the
+   future dataset:
 
-```
-pandera.errors.SchemaError: non-nullable series 'forecast' contains
-null values: 7021 rows of NaN
-```
+   ```r
+   future_periods <- unique(future_df$time_period)
+   idx.pred <- which(generated$data$time_period %in% future_periods &
+                     is.na(casestopred))
+   ```
 
-**Cross-checked:** Re-ran the same eval against the legacy
-`ghcr.io/dhis2-chap/docker_r_inla:master` image — produced the same
-NaN failure. So the bug is in the model's predict logic, not in
-either image. The legacy `docker_pull_failed` failure was masking it
-because the model never actually ran.
+The schema-check NaN failure that surfaced when only the image was
+swapped (`pandera ... 'forecast' contains null values: 7021 rows of
+NaN`) is gone. Sweep run at 2026-05-11T12:15Z passes in ~213s.
 
-**Likely root cause** in `predict.R`:
-
-```r
-casestopred <- generated$data$Cases     # response variable
-idx.pred <- which(is.na(casestopred))   # rows to predict for
-```
-
-`generated$data` is the lag-extended union of historic + future. Any
-historic row whose `Cases` is `NA` (gap-filled or genuinely missing in
-the source data) gets included in `idx.pred` alongside the intended
-future rows. The predictions CSV then carries rows for time periods
-chap-core's join doesn't expect, leaving the actual forecast horizon
-NaN after merge.
-
-**Possible fix:** restrict `idx.pred` to `time_period` values that
-appear in `future_df` only:
-
-```r
-future_periods <- unique(future_df$time_period)
-idx.pred <- which(generated$data$time_period %in% future_periods &
-                  is.na(casestopred))
-```
-
-(Untested — needs the model author or someone familiar with INLA-EWARS
-output schemas to validate.)
+Image is amd64-only (R-INLA ships x86_64 binaries only), so the row
+moves into the `--platform=linux/amd64` table — no path to remove that
+caveat for this repo short of an INLA arm64 rebuild upstream.
 
 ---
 
@@ -251,7 +229,7 @@ to the snapshot above.
 
 ### In flight — waiting on PR merge
 
-Just one outstanding; on merge the dashboard moves to **25 pass / 3 fail**.
+Just one outstanding; on merge the dashboard moves to **27 pass / 2 fail**.
 
 | Repo | PR | Bucket flips |
 | --- | --- | --- |
@@ -259,28 +237,18 @@ Just one outstanding; on merge the dashboard moves to **25 pass / 3 fail**.
 
 ### Tractable — fixable from our side
 
-#### 1. `ewars_per_district` predict.R patch
+#### 1. Multi-arch image batch (15 repos)
 
-Sketched above (`idx.pred` should restrict to `time_period`
-values that appear in `future_df`). Untested — would need a chap eval
-run with the proposed change to confirm the NaN forecast values go
-away.
-
-- Effort: ~1 PR, 5 lines in `predict.R`.
-- Risk: may expose a next-layer issue (INLA convergence on synth
-  data) without actually flipping the bucket green. Same shape as the
-  Vietnam fix — progress, not regression.
-
-#### 2. Multi-arch image batch (13 repos)
-
-13 repos pass only because the host pre-pulls their docker image with
+15 repos pass only because the host pre-pulls their docker image with
 `--platform=linux/amd64`. They'd fail on a pure arm64 deploy.
 
-- Effort: 13 mostly-identical PRs (Dockerfile FROM tweak +
+- Effort: 15 mostly-identical PRs (Dockerfile FROM tweak +
   `docker buildx build --platform linux/amd64,linux/arm64`, or a
   `chapkit-r-tidyverse` / `chapkit-r-inla` swap that already ships
   multi-arch). Some can't go multi-arch at all (R-INLA ships x86_64
-  binaries only); those need a documented platform pin instead.
+  binaries only — `ewars_per_district`, `INLA_baseline_model`,
+  `epidemiar_example_model`); those need a documented platform pin
+  instead.
 - Doesn't change the dashboard count (they're already `pass`), but
   removes the ⚠ caveat across the board.
 
@@ -340,11 +308,11 @@ shape.
 ### Suggested order
 
 1. ~~File the 3 outreach issues~~ — done (links above).
-2. Multi-arch image batch (clears 13 ⚠ caveats, mostly mechanical).
-3. `ewars_per_district` predict.R patch attempt.
+2. ~~`ewars_per_district` predict.R patch~~ — done, PR [#1](https://github.com/chap-models/ewars_per_district/pull/1) merged 2026-05-11.
+3. Multi-arch image batch (clears 15 ⚠ caveats, mostly mechanical).
 4. Auto-update Snapshot section (eliminates a recurring drift).
 5. Scheduled sweep workflow.
 
-Items 2-3 are model-side work. Items 4-5 are this repo's debt. Item 4
-is the highest-value-per-hour entry now that the outreach issues are
-filed; do that first if time is constrained.
+Item 3 is model-side work. Items 4-5 are this repo's debt. Item 4 is
+the highest-value-per-hour entry now that the in-flight queue is
+nearly drained; do that first if time is constrained.

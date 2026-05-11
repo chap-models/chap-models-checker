@@ -520,21 +520,21 @@
           "ID_year": "year",
           "ID_spat": "location"
         },
-        "docker_image": "docker_r_inla:latest"
+        "docker_image": "ghcr.io/dhis2-chap/chapkit-r-inla:latest"
       },
-      "status": "fail",
-      "failure": "docker_pull_failed",
-      "duration_s": 11.470397233963013,
+      "status": "pass",
+      "failure": null,
+      "duration_s": 213.05149912834167,
       "log_path": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/ewars_per_district/run.log",
       "dataset_path": "/Users/morteoh/dev/chap-sdk/chap-core/example_data/laos_subset.csv",
-      "output_file": null,
-      "error_excerpt": "    raise create_api_error_from_http_exception(e) from e\n  File \"/Users/morteoh/.local/share/uv/tools/chap-core/lib/python3.13/site-packages/docker/errors.py\", line 39, in create_api_error_from_http_exception\ndocker.errors.ImageNotFound: 404 Client Error for http+docker://localhost/v1.54/images/create?tag=latest&fromImage=docker_r_inla: Not Found (\"pull access denied for docker_r_inla, repository does not exist or may require 'docker login'\")",
+      "output_file": "/Users/morteoh/dev/chap-sdk/chap-models-checker/work/ewars_per_district/eval.nc",
+      "error_excerpt": null,
       "note": "data=curated+geo",
-      "suggestion": "MLproject `docker_env.image` is private, missing, or arch-incompatible. Push the image to ghcr.io public, switch to a chapkit-images base (`chapkit-py` / `chapkit-r` / `chapkit-r-inla`), or pin a multi-arch tag.",
+      "suggestion": "Ran only because the host pre-pulled the docker image with `--platform=linux/amd64`. The image lacks an arm64 manifest, so this would fail on an arm64 deploy. Author should publish a multi-arch image or the deploy needs to force the platform too.",
       "platform_override": "linux/amd64",
-      "returncode": 1,
+      "returncode": 0,
       "timed_out": false,
-      "checked_at": "2026-05-11T09:35:48+00:00"
+      "checked_at": "2026-05-11T12:15:28+00:00"
     },
     {
       "repo": "ewars_template",
@@ -975,5 +975,5 @@
     }
   ],
   "started_at": "2026-05-11T09:12:58+00:00",
-  "finished_at": "2026-05-11T09:45:53+00:00"
+  "finished_at": "2026-05-11T12:15:28+00:00"
 }

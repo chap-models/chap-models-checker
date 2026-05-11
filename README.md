@@ -7,22 +7,21 @@ against the current `chap-core`.
 
 ## Current status
 
-As of the last full sweep (2026-05-11T09:45Z): **25 pass / 4 fail** of 29
-chap-models repos. The 25 passes split into 11 fully clean and 14 that
+As of the last full sweep (2026-05-11T12:15Z): **26 pass / 3 fail** of 29
+chap-models repos. The 26 passes split into 11 fully clean and 15 that
 only succeed because the sweep host pre-pulled their docker image with
 `--platform=linux/amd64` (the model authors haven't published multi-arch
-images; those 14 would fail on a pure arm64 deploy).
+images; those 15 would fail on a pure arm64 deploy).
 
-### Failing (4)
+### Failing (3)
 
 | Repo | Failure |
 | --- | --- |
 | [`Exponential_smoothing_state_space_model`](https://github.com/chap-models/Exponential_smoothing_state_space_model) | `docker_image_missing_runtime` — image lacks `forecast`; repo also has deeper rot beyond an image swap. No tracking issue (the original [#2](https://github.com/chap-models/Exponential_smoothing_state_space_model/issues/2) was scoped wrong and closed). |
-| [`ewars_per_district`](https://github.com/chap-models/ewars_per_district) | `docker_pull_failed` — PR [#1](https://github.com/chap-models/ewars_per_district/pull/1) (chapkit-r-inla swap + predict.R `idx.pred` filter) open |
 | [`minimal_template_example`](https://github.com/chap-models/minimal_template_example) | `model_runtime_error` — PR [#2](https://github.com/chap-models/minimal_template_example/pull/2) open |
 | [`Vietnam-dengue-superensemble`](https://github.com/chap-models/Vietnam-dengue-superensemble) | `prediction_length` — `max_prediction_length=1`, chap-core wraps to extend to 3; INLA crashes (`inla.inlaprogram.has.crashed`) inside the iterative predict. Regression after upstream commits 2026-05-06T13:20Z (was green on prior sweep with same bundled dataset). |
 
-### Passing only with `--platform=linux/amd64` (14)
+### Passing only with `--platform=linux/amd64` (15)
 
 These either pin an amd64-only base in their Dockerfile (chapkit-r-inla
 ships INLA x86_64 binaries only) or never built an arm64 manifest in the
@@ -38,6 +37,7 @@ environment needs to force `linux/amd64` too.
 | [`chap_auto_ewars_weekly`](https://github.com/chap-models/chap_auto_ewars_weekly) | mlproject |
 | [`D-FENSE---LNCC-ARp-2025-1`](https://github.com/chap-models/D-FENSE---LNCC-ARp-2025-1) | mlproject |
 | [`epidemiar_example_model`](https://github.com/chap-models/epidemiar_example_model) | mlproject |
+| [`ewars_per_district`](https://github.com/chap-models/ewars_per_district) | mlproject |
 | [`ewars_template`](https://github.com/chap-models/ewars_template) | mlproject |
 | [`INLA_baseline_model`](https://github.com/chap-models/INLA_baseline_model) | mlproject |
 | [`LaCiD-UFRN-ARIMAX`](https://github.com/chap-models/LaCiD-UFRN-ARIMAX) | mlproject |

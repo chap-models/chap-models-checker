@@ -34,7 +34,101 @@ def test_modules_import() -> None:
 
 def test_cli_app_has_run_list_reclassify() -> None:
     commands = {cmd.name for cmd in cli.app.registered_commands}
-    assert {"run", "list", "reclassify"} <= commands
+    assert {"run", "list", "reclassify", "render-status"} <= commands
+
+
+def _snapshot_report() -> Report:
+    """Three-row report covering one fail, one amd64-pinned pass, one native pass."""
+    return Report(
+        chap_core_version=None,
+        repos=[
+            RunResult(
+                repo="vietnam_dengue",
+                style=ModelStyle.mlproject,
+                status=RunStatus.fail,
+                failure=FailureCategory.prediction_length,
+                platform_override="linux/amd64",
+                checked_at="2026-05-18T13:00:00+00:00",
+            ),
+            RunResult(
+                repo="ewars_template",
+                style=ModelStyle.mlproject,
+                status=RunStatus.pass_,
+                platform_override="linux/amd64",
+                checked_at="2026-05-18T13:00:00+00:00",
+            ),
+            RunResult(
+                repo="chtorch",
+                style=ModelStyle.mlproject,
+                status=RunStatus.pass_,
+                platform_override=None,
+                checked_at="2026-05-18T13:00:00+00:00",
+            ),
+        ],
+        started_at="2026-05-18T12:30:00+00:00",
+        finished_at="2026-05-18T13:10:00+00:00",
+    )
+
+
+def test_render_snapshot_block_buckets_repos_correctly() -> None:
+    """One fail + one amd64-pinned pass + one native pass land in the right tables."""
+    block = report.render_snapshot_block(_snapshot_report(), style="status")
+    # Headers reflect the per-bucket counts.
+    assert "### Failing (1)" in block
+    assert "### Passing only with `--platform=linux/amd64` (1)" in block
+    assert "### Passing cleanly on the host's native arch (1)" in block
+    # Each repo appears in its expected section only.
+    fail_section = block.split("### Failing")[1].split("### Passing only")[0]
+    amd64_section = block.split("### Passing only")[1].split("### Passing cleanly")[0]
+    native_section = block.split("### Passing cleanly")[1]
+    assert "vietnam_dengue" in fail_section
+    assert "ewars_template" in amd64_section
+    assert "chtorch" in native_section
+    # Bucket name is the failure enum value.
+    assert "`prediction_length`" in fail_section
+
+
+def test_render_snapshot_block_readme_adds_split_paragraph() -> None:
+    """README variant exposes the native/amd64 split inline; STATUS doesn't."""
+    readme = report.render_snapshot_block(_snapshot_report(), style="readme")
+    status = report.render_snapshot_block(_snapshot_report(), style="status")
+    assert "fully clean" in readme
+    assert "fully clean" not in status
+    # Both end with the close marker so the splicer can find it.
+    assert readme.rstrip().endswith(report.MARKER_END)
+    assert status.rstrip().endswith(report.MARKER_END)
+
+
+def test_splice_marker_block_replaces_content_and_is_idempotent() -> None:
+    """Splicing the same block twice is a no-op on the second pass."""
+    original = (
+        "# Header\n\nIntro prose.\n\n"
+        f"{report.MARKER_BEGIN}\nOLD CONTENT\nMORE OLD\n{report.MARKER_END}\n\n"
+        "Trailing prose.\n"
+    )
+    new_block = f"{report.MARKER_BEGIN}\nNEW CONTENT\n{report.MARKER_END}\n"
+
+    first, changed1 = report.splice_marker_block(original, new_block=new_block)
+    assert changed1 is True
+    assert "OLD CONTENT" not in first
+    assert "NEW CONTENT" in first
+    # Surrounding prose preserved untouched.
+    assert first.startswith("# Header\n\nIntro prose.\n\n")
+    assert first.endswith("\nTrailing prose.\n")
+
+    # Re-splicing the same block must report unchanged.
+    second, changed2 = report.splice_marker_block(first, new_block=new_block)
+    assert changed2 is False
+    assert second == first
+
+
+def test_splice_marker_block_raises_when_markers_missing() -> None:
+    """Missing markers must be an error — we never silently append the block."""
+    import pytest as _pytest
+
+    new_block = f"{report.MARKER_BEGIN}\nx\n{report.MARKER_END}\n"
+    with _pytest.raises(ValueError, match="snapshot markers not found"):
+        report.splice_marker_block("no markers here\n", new_block=new_block)
 
 
 def test_classify_failure_known_patterns() -> None:

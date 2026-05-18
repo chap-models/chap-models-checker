@@ -7,28 +7,19 @@ against the current `chap-core`.
 
 ## Current status
 
-As of the last full sweep (2026-05-18T13:10Z): **27 pass / 1 fail** of 28
-chap-models repos. The 27 passes split into 12 fully clean and 15 that
-only succeed because the sweep host pre-pulled their docker image with
-`--platform=linux/amd64` (the model authors haven't published multi-arch
-images; those 15 would fail on a pure arm64 deploy).
+<!-- BEGIN-SNAPSHOT -->
 
-`Exponential_smoothing_state_space_model` no longer appears in the org
-discovery (it was in the 2026-05-11 sweep), so the total drops from 29
-to 28.
+As of the last full sweep (2026-05-18T13:10:02+00:00): **27 pass / 1 fail** of 28 chap-models repos. The 27 passes split into 12 fully clean and 15 that only succeed because the sweep host pre-pulled their docker image with `--platform=linux/amd64` (the model authors haven't published multi-arch images; those 15 would fail on a pure arm64 deploy).
 
 ### Failing (1)
 
 | Repo | Failure |
 | --- | --- |
-| [`Vietnam-dengue-superensemble`](https://github.com/chap-models/Vietnam-dengue-superensemble) | `prediction_length` — `max_prediction_length=1`, chap-core wraps to extend to 3; INLA crashes (`inla.inlaprogram.has.crashed`) inside the iterative predict. Regression after upstream commits 2026-05-06T13:20Z (was green on prior sweep with same bundled dataset). |
+| [`Vietnam-dengue-superensemble`](https://github.com/chap-models/Vietnam-dengue-superensemble) | `prediction_length` |
 
 ### Passing only with `--platform=linux/amd64` (15)
 
-These either pin an amd64-only base in their Dockerfile (chapkit-r-inla
-ships INLA x86_64 binaries only) or never built an arm64 manifest in the
-first place. Author should publish a multi-arch image, or the deploy
-environment needs to force `linux/amd64` too.
+These either pin an amd64-only base in their Dockerfile (chapkit-r-inla ships INLA x86_64 binaries only) or never built an arm64 manifest in the first place. Author should publish a multi-arch image, or the deploy environment needs to force `linux/amd64` too.
 
 | Repo | Style |
 | --- | --- |
@@ -65,15 +56,17 @@ environment needs to force `linux/amd64` too.
 | [`Xiang_LSTM`](https://github.com/chap-models/Xiang_LSTM) | mlproject |
 | [`Xiang_SVM`](https://github.com/chap-models/Xiang_SVM) | mlproject |
 
----
+<!-- END-SNAPSHOT -->
 
 See [`STATUS.md`](STATUS.md) for the same tables plus per-repo
 investigation notes and the forward-looking roadmap. The raw machine-
 readable snapshot lives in [`last_report.json`](last_report.json).
 
-This section is hand-updated and can drift. Refresh after a sweep with
-`make run` (or `make reclassify` to re-render from existing logs without
-rerunning chap eval).
+The block above is auto-rendered from `last_report.json` by
+`chap-models-checker render-status`. `make run` runs the sweep and the
+renderer together, so the block stays in sync after every full sweep.
+Per-repo failure context (the "why" behind each bucket) lives in
+[`STATUS.md`](STATUS.md) under "Per-repo investigation notes".
 
 ## What it does
 

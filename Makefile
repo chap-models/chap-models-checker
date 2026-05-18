@@ -1,4 +1,4 @@
-.PHONY: help install lint check test clean run reclassify list
+.PHONY: help install lint check test clean run reclassify list render-status
 
 # ==============================================================================
 # Venv
@@ -20,6 +20,7 @@ help:
 	@echo "  test          Run tests"
 	@echo "  run           Run the full chap-models sweep"
 	@echo "  reclassify    Re-run failure classification on existing logs"
+	@echo "  render-status Refresh the Snapshot block in README.md / STATUS.md"
 	@echo "  list          Show repo status from the committed snapshot"
 	@echo "  clean         Remove caches and work artifacts"
 
@@ -50,10 +51,16 @@ test:
 run:
 	@echo ">>> chap-models-checker run"
 	@$(UV) run chap-models-checker run || true
+	@$(MAKE) --no-print-directory render-status
 
 reclassify:
 	@echo ">>> chap-models-checker reclassify"
 	@$(UV) run chap-models-checker reclassify
+	@$(MAKE) --no-print-directory render-status
+
+render-status:
+	@echo ">>> chap-models-checker render-status"
+	@$(UV) run chap-models-checker render-status
 
 list:
 	@echo ">>> chap-models-checker list"

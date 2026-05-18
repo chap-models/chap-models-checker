@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Literal
 
 from rich import box
 from rich.console import Console, Group
@@ -14,14 +15,26 @@ from rich.text import Text
 from chap_models_checker.models import ModelStyle, RepoInfo, Report, RunResult, RunStatus
 
 __all__ = [
+    "MARKER_BEGIN",
+    "MARKER_END",
     "ModelStyle",
     "RepoInfo",
     "render_console",
     "render_list",
     "render_markdown",
+    "render_snapshot_block",
+    "splice_marker_block",
     "write_outputs",
     "write_snapshot",
 ]
+
+# Markers used by render-status to splice an auto-generated snapshot block into
+# README.md and STATUS.md. The marker comments themselves live inside the
+# managed region, so a successful splice replaces them every time too — that's
+# the simpler invariant than trying to preserve a "header" line that the
+# renderer would have to know about.
+MARKER_BEGIN = "<!-- BEGIN-SNAPSHOT -->"
+MARKER_END = "<!-- END-SNAPSHOT -->"
 
 _STATUS_STYLE = {
     RunStatus.pass_: "green",
@@ -247,6 +260,134 @@ def write_snapshot(report: Report, path: Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(report.model_dump_json(indent=2) + "\n")
     return path
+
+
+_GITHUB_ORG = "chap-models"
+
+
+def _repo_link(name: str) -> str:
+    return f"[`{name}`](https://github.com/{_GITHUB_ORG}/{name})"
+
+
+def _bucket_for(r: RunResult) -> Literal["fail", "skip", "amd64", "native"]:
+    if r.status == RunStatus.fail:
+        return "fail"
+    if r.status == RunStatus.skip:
+        return "skip"
+    return "amd64" if r.platform_override == "linux/amd64" else "native"
+
+
+def render_snapshot_block(report: Report, *, style: Literal["readme", "status"]) -> str:
+    """Return the auto-generated snapshot block for README.md or STATUS.md.
+
+    The block is delimited by ``MARKER_BEGIN`` / ``MARKER_END`` and replaces
+    the previous content between them. Both styles emit the same three
+    tables (Failing / amd64-pinned passes / native passes); the README
+    style adds a leading prose paragraph summarising the pass split.
+    """
+    failing = sorted(
+        [r for r in report.repos if _bucket_for(r) == "fail"],
+        key=lambda r: r.repo.lower(),
+    )
+    amd64 = sorted(
+        [r for r in report.repos if _bucket_for(r) == "amd64"],
+        key=lambda r: r.repo.lower(),
+    )
+    native = sorted(
+        [r for r in report.repos if _bucket_for(r) == "native"],
+        key=lambda r: r.repo.lower(),
+    )
+
+    lines: list[str] = [MARKER_BEGIN, ""]
+    finished_at = report.finished_at
+    total = report.total
+    passed = report.passed
+    failed = report.failed
+    if style == "readme":
+        lines.append(
+            f"As of the last full sweep ({finished_at}): "
+            f"**{passed} pass / {failed} fail** of {total} chap-models repos. "
+            f"The {passed} passes split into {len(native)} fully clean and "
+            f"{len(amd64)} that only succeed because the sweep host pre-pulled their "
+            f"docker image with `--platform=linux/amd64` (the model authors haven't "
+            f"published multi-arch images; those {len(amd64)} would fail on a pure "
+            f"arm64 deploy)."
+        )
+    else:
+        lines.append(
+            f"As of the last full sweep (**{finished_at}**): "
+            f"**{passed} pass / {failed} fail** of {total} chap-models repos."
+        )
+    lines.append("")
+
+    lines.append(f"### Failing ({len(failing)})")
+    lines.append("")
+    if failing:
+        lines.append("| Repo | Failure |")
+        lines.append("| --- | --- |")
+        for r in failing:
+            bucket = r.failure.value if r.failure else ""
+            lines.append(f"| {_repo_link(r.repo)} | `{bucket}` |")
+    else:
+        lines.append("_None._")
+    lines.append("")
+
+    lines.append(f"### Passing only with `--platform=linux/amd64` ({len(amd64)})")
+    lines.append("")
+    lines.append(
+        "These either pin an amd64-only base in their Dockerfile (chapkit-r-inla "
+        "ships INLA x86_64 binaries only) or never built an arm64 manifest in the "
+        "first place. Author should publish a multi-arch image, or the deploy "
+        "environment needs to force `linux/amd64` too."
+    )
+    lines.append("")
+    if amd64:
+        lines.append("| Repo | Style |")
+        lines.append("| --- | --- |")
+        for r in amd64:
+            lines.append(f"| {_repo_link(r.repo)} | {r.style.value} |")
+    else:
+        lines.append("_None._")
+    lines.append("")
+
+    lines.append(f"### Passing cleanly on the host's native arch ({len(native)})")
+    lines.append("")
+    if native:
+        lines.append("| Repo | Style |")
+        lines.append("| --- | --- |")
+        for r in native:
+            lines.append(f"| {_repo_link(r.repo)} | {r.style.value} |")
+    else:
+        lines.append("_None._")
+    lines.append("")
+
+    lines.append(MARKER_END)
+    return "\n".join(lines) + "\n"
+
+
+def splice_marker_block(text: str, *, new_block: str) -> tuple[str, bool]:
+    """Replace the content between ``MARKER_BEGIN`` and ``MARKER_END`` in ``text``.
+
+    ``new_block`` must include both marker lines (i.e. the full output of
+    :func:`render_snapshot_block`). Returns ``(new_text, changed)``;
+    ``changed`` is False when the spliced result is byte-identical to the
+    input, so callers can avoid touching the file on a no-op refresh.
+
+    Raises ``ValueError`` if either marker is missing — we never want to
+    silently append the block to a doc that's lost its markers.
+    """
+    begin_idx = text.find(MARKER_BEGIN)
+    end_idx = text.find(MARKER_END)
+    if begin_idx == -1 or end_idx == -1 or end_idx < begin_idx:
+        raise ValueError(f"snapshot markers not found (need {MARKER_BEGIN!r} … {MARKER_END!r})")
+    # Slice up to the start of the begin marker, splice the new block (which
+    # already contains both markers + its own trailing newline), then resume
+    # from after the end marker's newline.
+    after_end = end_idx + len(MARKER_END)
+    if after_end < len(text) and text[after_end] == "\n":
+        after_end += 1
+    new_text = text[:begin_idx] + new_block + text[after_end:]
+    return new_text, new_text != text
 
 
 _STATUS_INDICATOR = {

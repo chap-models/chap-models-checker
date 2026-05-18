@@ -18,15 +18,18 @@ section is summarised from. Refresh this file after a sweep with
 
 ## Snapshot
 
-As of the last full sweep (**2026-05-11T12:15Z**): **26 pass / 3 fail**
-of 29 chap-models repos.
+As of the last full sweep (**2026-05-18T13:10Z**): **27 pass / 1 fail**
+of 28 chap-models repos.
 
-### Failing (3)
+`Exponential_smoothing_state_space_model` no longer appears in the org
+discovery (was in the 2026-05-11 sweep), so the total drops from 29 to
+28. Per-repo investigation notes for that repo are kept below as
+historical record.
+
+### Failing (1)
 
 | Repo | Failure |
 | --- | --- |
-| [`Exponential_smoothing_state_space_model`](https://github.com/chap-models/Exponential_smoothing_state_space_model) | `docker_image_missing_runtime` — `library(forecast)` fails (image lacks `forecast`). Repo has rot beyond an image swap (see notes). No tracking issue; the original [#2](https://github.com/chap-models/Exponential_smoothing_state_space_model/issues/2) was scoped wrong and closed. |
-| [`minimal_template_example`](https://github.com/chap-models/minimal_template_example) | `model_runtime_error` — PR [#2](https://github.com/chap-models/minimal_template_example/pull/2) open. |
 | [`Vietnam-dengue-superensemble`](https://github.com/chap-models/Vietnam-dengue-superensemble) | `prediction_length` — model declares `max_prediction_length=1`, chap-core wraps it to extend to 3; INLA crashes (`inla.inlaprogram.has.crashed`) inside the iterative predict loop. Regression after upstream commits on 2026-05-06T13:20Z (was green on the 2026-05-06T11:26Z sweep with the same bundled dataset). |
 
 ### Passing only with `--platform=linux/amd64` (15)
@@ -54,7 +57,7 @@ environment needs to force `linux/amd64` too.
 | [`rwanda_sarimax`](https://github.com/chap-models/rwanda_sarimax) | mlproject |
 | [`XGBoost_for_Malawi`](https://github.com/chap-models/XGBoost_for_Malawi) | mlproject |
 
-### Passing cleanly on the host's native arch (11)
+### Passing cleanly on the host's native arch (12)
 
 | Repo | Style |
 | --- | --- |
@@ -66,6 +69,7 @@ environment needs to force `linux/amd64` too.
 | [`chapkit_rwanda_malaria_bym_model`](https://github.com/chap-models/chapkit_rwanda_malaria_bym_model) | chapkit |
 | [`chapkit_simple_multistep_model`](https://github.com/chap-models/chapkit_simple_multistep_model) | chapkit |
 | [`chtorch`](https://github.com/chap-models/chtorch) | mlproject |
+| [`minimal_template_example`](https://github.com/chap-models/minimal_template_example) | mlproject |
 | [`rwanda_random_forest`](https://github.com/chap-models/rwanda_random_forest) | mlproject |
 | [`Xiang_LSTM`](https://github.com/chap-models/Xiang_LSTM) | mlproject |
 | [`Xiang_SVM`](https://github.com/chap-models/Xiang_SVM) | mlproject |
@@ -110,7 +114,11 @@ The canonical replacement for legacy / private docker images is
 
 ## Per-repo investigation notes
 
-### `Exponential_smoothing_state_space_model` — partial fix shipped
+### `Exponential_smoothing_state_space_model` — partial fix shipped (delisted 2026-05-18)
+
+> No longer discovered by the org sweep as of the 2026-05-18 run. Notes
+> retained as historical record.
+
 
 **Surface failure:** `invalid_mlproject` — pydantic rejected
 `required_covariates: ` (bare key, parses as YAML null) with
@@ -229,11 +237,10 @@ to the snapshot above.
 
 ### In flight — waiting on PR merge
 
-Just one outstanding; on merge the dashboard moves to **27 pass / 2 fail**.
-
-| Repo | PR | Bucket flips |
-| --- | --- | --- |
-| [`minimal_template_example`](https://github.com/chap-models/minimal_template_example) | [#2](https://github.com/chap-models/minimal_template_example/pull/2) | `model_runtime_error` -> `pass` |
+Queue is empty. `minimal_template_example` PR
+[#2](https://github.com/chap-models/minimal_template_example/pull/2)
+merged; the repo passes cleanly on the host's native arch in the
+2026-05-18 sweep.
 
 ### Tractable — fixable from our side
 

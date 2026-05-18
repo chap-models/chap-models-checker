@@ -670,5 +670,58 @@ def run_cmd(
         raise typer.Exit(code=1)
 
 
+@app.command("render-status")
+def render_status_cmd(
+    snapshot: Annotated[
+        Path,
+        typer.Option(
+            "--snapshot",
+            help="Path to last_report.json (default: ./last_report.json).",
+        ),
+    ] = DEFAULT_SNAPSHOT_PATH,
+    readme: Annotated[
+        Path,
+        typer.Option("--readme", help="Path to README.md."),
+    ] = Path("README.md"),
+    status: Annotated[
+        Path,
+        typer.Option("--status", help="Path to STATUS.md."),
+    ] = Path("STATUS.md"),
+) -> None:
+    """Rewrite the auto-managed Snapshot block in README.md and STATUS.md from ``last_report.json``.
+
+    Idempotent — exits cleanly without touching either file when the
+    rendered block already matches what's on disk. Each target file must
+    contain both ``<!-- BEGIN-SNAPSHOT -->`` / ``<!-- END-SNAPSHOT -->``
+    markers; missing markers are an error rather than a silent append.
+    """
+    console = Console()
+    snap = _load_snapshot(snapshot.resolve())
+    if snap is None:
+        console.print(f"[red]No snapshot at {snapshot}.[/]")
+        raise typer.Exit(code=2)
+
+    targets: list[tuple[Path, str]] = [
+        (readme, "readme"),
+        (status, "status"),
+    ]
+    for path, style in targets:
+        path = path.resolve()
+        if not path.exists():
+            console.print(f"[red]Target {path} does not exist.[/]")
+            raise typer.Exit(code=2)
+        block = report.render_snapshot_block(snap, style=style)  # type: ignore[arg-type]
+        try:
+            new_text, changed = report.splice_marker_block(path.read_text(), new_block=block)
+        except ValueError as exc:
+            console.print(f"[red]{path}: {exc}[/]")
+            raise typer.Exit(code=2)
+        if changed:
+            path.write_text(new_text)
+            console.print(f"[bold]Updated[/] {path}")
+        else:
+            console.print(f"[dim]Unchanged[/] {path}")
+
+
 if __name__ == "__main__":
     app()

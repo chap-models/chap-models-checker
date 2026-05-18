@@ -10,34 +10,29 @@ used to be three files:
 - **Roadmap** — what's next, ordered by where the work has to happen
   (was `ROADMAP.md`).
 
-`last_report.json` is the raw machine-readable snapshot the snapshot
-section is summarised from. Refresh this file after a sweep with
-`make run` (or `make reclassify` for re-render only).
+`last_report.json` is the raw machine-readable snapshot the Snapshot
+section below is rendered from. `make run` runs the full sweep and then
+refreshes the Snapshot block automatically; `make reclassify` re-buckets
+existing run logs and also refreshes the block. `make render-status`
+refreshes only the block, without touching the JSON.
 
 ---
 
 ## Snapshot
 
-As of the last full sweep (**2026-05-18T13:10Z**): **27 pass / 1 fail**
-of 28 chap-models repos.
+<!-- BEGIN-SNAPSHOT -->
 
-`Exponential_smoothing_state_space_model` no longer appears in the org
-discovery (was in the 2026-05-11 sweep), so the total drops from 29 to
-28. Per-repo investigation notes for that repo are kept below as
-historical record.
+As of the last full sweep (**2026-05-18T13:10:02+00:00**): **27 pass / 1 fail** of 28 chap-models repos.
 
 ### Failing (1)
 
 | Repo | Failure |
 | --- | --- |
-| [`Vietnam-dengue-superensemble`](https://github.com/chap-models/Vietnam-dengue-superensemble) | `prediction_length` — model declares `max_prediction_length=1`, chap-core wraps it to extend to 3; INLA crashes (`inla.inlaprogram.has.crashed`) inside the iterative predict loop. Regression after upstream commits on 2026-05-06T13:20Z (was green on the 2026-05-06T11:26Z sweep with the same bundled dataset). |
+| [`Vietnam-dengue-superensemble`](https://github.com/chap-models/Vietnam-dengue-superensemble) | `prediction_length` |
 
 ### Passing only with `--platform=linux/amd64` (15)
 
-These either pin an amd64-only base in their Dockerfile (chapkit-r-inla
-ships INLA x86_64 binaries only) or never built an arm64 manifest in the
-first place. Author should publish a multi-arch image, or the deploy
-environment needs to force `linux/amd64` too.
+These either pin an amd64-only base in their Dockerfile (chapkit-r-inla ships INLA x86_64 binaries only) or never built an arm64 manifest in the first place. Author should publish a multi-arch image, or the deploy environment needs to force `linux/amd64` too.
 
 | Repo | Style |
 | --- | --- |
@@ -73,6 +68,13 @@ environment needs to force `linux/amd64` too.
 | [`rwanda_random_forest`](https://github.com/chap-models/rwanda_random_forest) | mlproject |
 | [`Xiang_LSTM`](https://github.com/chap-models/Xiang_LSTM) | mlproject |
 | [`Xiang_SVM`](https://github.com/chap-models/Xiang_SVM) | mlproject |
+
+<!-- END-SNAPSHOT -->
+
+The block above is auto-rendered from `last_report.json` by
+`chap-models-checker render-status` (wired into `make run`). Hand-curated
+context — the "why" behind each failing bucket, repos delisted from the
+org discovery — lives in "Per-repo investigation notes" below.
 
 ---
 
